@@ -12,6 +12,8 @@
       color: white;
       margin: 0;
       padding: 0;
+      display:flex;
+      height:100vh;
     }
 
     /* 상단 컨트롤 스타일 */
@@ -57,6 +59,19 @@
       justify-content: space-between;
       position: relative;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0; /* 초기 상태 */
+      transform: scale(0.9);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .diary-box.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .diary-box.hide {
+      opacity: 0;
+      transform: scale(0.9);
     }
 
     .diary-box header {
@@ -124,10 +139,69 @@
       border-radius: 4px;
       padding: 5px;
     }
+		.menu-bar {
+        	flex: 0.3;
+        	background-color: #274a8f;
+        	display: flex;
+        	flex-direction: column;
+        	align-items: center;
+        	padding: 20px 10px;
+        	gap: 20px;
+		}
+
+      	.menu-item {
+        	display: flex;
+        	align-items: center;
+        	justify-content: center;
+        	padding: 15px;
+        	width: 80%;
+        	color: white;
+        	text-align: center;
+        	background-color: #274a8f;
+        	border-radius: 5px;
+        	cursor: pointer;
+        	transition: background-color 0.3s ease;
+      	}
+
+      	.menu-item:hover,
+      	.menu-item.active {
+        	background-color: #007bff;
+      	}
+      	
+      	.logo-container {
+  			display: flex;
+  			align-items: center;
+  			gap: 10px;
+  			margin-bottom: 20px;
+  		}
+
+
+		.logo {
+  		    height: 50px;
+  			width: auto;
+  			}
+
+		.logo-text {
+  			font-size: 24px;
+  			font-weight: bold;
+  			color: white;
+		}
   </style>
 </head>
 <body>
+      <div class="menu-bar">
+      	<div class="logo-container">
+  			<img src="./image/Logo.png" alt="Logo" class="logo" />
+  			<div class="logo-text">Life Log</div>
+		</div>
+        <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
+        <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+        <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+        <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+        <div class="menu-item active" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
+      </div>
   <!-- 상단 컨트롤 -->
+  <div class="content">
   <div class="controls">
     <button id="addDiaryButton">+ 일기 추가</button>
   </div>
@@ -135,7 +209,7 @@
   <!-- 다이어리 박스 컨테이너 -->
   <div class="container" id="diaryContainer">
     <!-- 기본 다이어리 박스 -->
-    <div class="diary-box">
+    <div class="diary-box show">
       <header>
         <span class="date-label">날짜 선택</span>
         <span class="date-icon">📅</span>
@@ -143,6 +217,7 @@
       <div class="content" contenteditable="false">내용</div>
       <button class="delete-button">×</button>
     </div>
+  </div>
   </div>
 
   <script>
@@ -153,6 +228,11 @@
     addDiaryButton.addEventListener('click', () => {
       const diaryBox = createDiaryBox();
       diaryContainer.appendChild(diaryBox);
+
+      // 애니메이션을 위해 다음 프레임에 .show 클래스 추가
+      setTimeout(() => {
+        diaryBox.classList.add('show');
+      }, 10);
     });
 
     // Function to create a diary box
@@ -217,7 +297,10 @@
 
       // Delete diary box
       deleteButton.addEventListener('click', () => {
-        diaryContainer.removeChild(diaryBox);
+        diaryBox.classList.add('hide'); // Hide 애니메이션 클래스 추가
+        setTimeout(() => {
+          diaryContainer.removeChild(diaryBox); // 일정 시간 후 제거
+        }, 500); // 애니메이션 시간
       });
 
       return diaryBox;
@@ -285,7 +368,10 @@
 
       // Delete diary box
       deleteButton.addEventListener('click', () => {
-        diaryContainer.removeChild(box);
+        box.classList.add('hide'); // Hide 애니메이션 클래스 추가
+        setTimeout(() => {
+          diaryContainer.removeChild(box); // 일정 시간 후 제거
+        }, 500); // 애니메이션 시간
       });
     });
   </script>
