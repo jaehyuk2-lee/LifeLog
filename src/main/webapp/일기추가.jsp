@@ -57,6 +57,19 @@
       justify-content: space-between;
       position: relative;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0; /* 초기 상태 */
+      transform: scale(0.9);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .diary-box.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .diary-box.hide {
+      opacity: 0;
+      transform: scale(0.9);
     }
 
     .diary-box header {
@@ -135,7 +148,7 @@
   <!-- 다이어리 박스 컨테이너 -->
   <div class="container" id="diaryContainer">
     <!-- 기본 다이어리 박스 -->
-    <div class="diary-box">
+    <div class="diary-box show">
       <header>
         <span class="date-label">날짜 선택</span>
         <span class="date-icon">📅</span>
@@ -153,6 +166,11 @@
     addDiaryButton.addEventListener('click', () => {
       const diaryBox = createDiaryBox();
       diaryContainer.appendChild(diaryBox);
+
+      // 애니메이션을 위해 다음 프레임에 .show 클래스 추가
+      setTimeout(() => {
+        diaryBox.classList.add('show');
+      }, 10);
     });
 
     // Function to create a diary box
@@ -217,7 +235,10 @@
 
       // Delete diary box
       deleteButton.addEventListener('click', () => {
-        diaryContainer.removeChild(diaryBox);
+        diaryBox.classList.add('hide'); // Hide 애니메이션 클래스 추가
+        setTimeout(() => {
+          diaryContainer.removeChild(diaryBox); // 일정 시간 후 제거
+        }, 500); // 애니메이션 시간
       });
 
       return diaryBox;
@@ -285,7 +306,10 @@
 
       // Delete diary box
       deleteButton.addEventListener('click', () => {
-        diaryContainer.removeChild(box);
+        box.classList.add('hide'); // Hide 애니메이션 클래스 추가
+        setTimeout(() => {
+          diaryContainer.removeChild(box); // 일정 시간 후 제거
+        }, 500); // 애니메이션 시간
       });
     });
   </script>
