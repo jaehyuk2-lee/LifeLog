@@ -156,11 +156,11 @@
   			<img src="./image/Logo.png" alt="Logo" class="logo" />
   			<div class="logo-text">Life Log</div>
 		</div>
-        <div class="menu-item active" data-page="main">메인</div>
-        <div class="menu-item" data-page="log-analysis">로그 분석</div>
-        <div class="menu-item" data-page="log-record">로그 기록</div>
-        <div class="menu-item" data-page="goal-management">목표 관리</div>
-        <div class="menu-item" data-page="diary">일기</div>
+        <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
+        <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+        <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+        <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+        <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
       </div>
 	
     <div class="calendar-container">
@@ -175,6 +175,7 @@
             <jsp:param name="month" value="<%= month %>" />
         </jsp:include>
     </div>
+    
     <div class="side">
     	<div class="profile">
             <div class="name">재혁리</div>
