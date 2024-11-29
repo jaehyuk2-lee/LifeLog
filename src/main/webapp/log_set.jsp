@@ -207,16 +207,15 @@
       const tableBody = document.getElementById("logTable").querySelector("tbody");
       const saveChangesBtn = document.getElementById("saveChanges");
 
-      // Save changes: Replace filled inputs with text, keep empty inputs
       saveChangesBtn.addEventListener("click", () => {
         const rows = tableBody.querySelectorAll("tr");
         rows.forEach((row) => {
           const inputs = row.querySelectorAll("input");
           inputs.forEach((input) => {
-            const value = input.value.trim(); // Get the value of the input
-            const cell = input.parentElement; // Get the parent cell of the input
+            const value = input.value.trim();
+            const cell = input.parentElement;
             if (value) {
-              cell.textContent = value; // Replace input with its value
+              cell.textContent = value;
             }
           });
         });
