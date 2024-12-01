@@ -155,10 +155,10 @@ pageEncoding="UTF-8"%>
         const menuItems = document.querySelectorAll(".menu-item");
         const previewImage = document.querySelector(".preview img");
         const images = [
-          "./image/2.jpg",
-          "./image/3.jpg",
-          "./image/analysis.jpg",
-          "./image/4.PNG",
+          "./images/1.gif",
+          "./images/2.gif",
+          "./images/analysis.jpg",
+          "./images/4.gif",
         ];
         let currentIndex = 0;
         let timer;
