@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 
 <head>
     <meta charset="UTF-8">
-    <title>회원 정보</title>
+    <title>Lifelog</title>
     <style>
         body {
             background-color: #000;
@@ -98,16 +99,89 @@
             background-color: #155bb5;
         }
     </style>
+
+    <script>
+        function cancelEdit() {
+            window.location.href = "profile.jsp";
+        }
+    </script>
+
 </head>
 
 <body>
+    <%
+        // 사용자 입력 데이터 가져오기
+        String currentPassword = request.getParameter("current_password");
+        String newPassword = request.getParameter("new_password");
+        String confirmPassword = request.getParameter("confirm_password");
+        String userId = "honggildong@lifelog.com"; // 세션이나 로그인된 사용자 ID 사용
+
+        // 결과 메시지
+        String message = "";
+
+        if (currentPassword != null && newPassword != null && confirmPassword != null) {
+            if (!newPassword.equals(confirmPassword)) {
+                message = "새 비밀번호가 일치하지 않습니다.";
+            } else {
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+
+                try {
+                    // 데이터베이스 연결 설정
+                    String url = "jdbc:mysql://localhost:3306/user_logs_db?useSSL=false&serverTimezone=UTC";
+                    String dbUsername = "lifelog_admin";
+                    String dbPassword = "q1w2e3r4";
+
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    conn = DriverManager.getConnection(url, dbUsername, dbPassword);
+
+                    // 현재 비밀번호 확인
+                    String sql = "SELECT password FROM users WHERE id = ?";
+                    pstmt = conn.prepareStatement(sql);
+                    pstmt.setString(1, userId);
+                    rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        String dbPasswordHash = rs.getString("password");
+
+                        if (!currentPassword.equals(dbPasswordHash)) { // 비밀번호 확인
+                            message = "현재 비밀번호가 일치하지 않습니다.";
+                        } else {
+                            // 비밀번호 업데이트
+                            sql = "UPDATE users SET password = ? WHERE id = ?";
+                            pstmt = conn.prepareStatement(sql);
+                            pstmt.setString(1, newPassword);
+                            pstmt.setString(2, userId);
+                            int updatedRows = pstmt.executeUpdate();
+
+                            if (updatedRows > 0) {
+                                message = "비밀번호가 성공적으로 변경되었습니다.";
+                            } else {
+                                message = "비밀번호 변경에 실패했습니다.";
+                            }
+                        }
+                    } else {
+                        message = "사용자를 찾을 수 없습니다.";
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    message = "오류가 발생했습니다. 다시 시도해주세요.";
+                } finally {
+                    if (rs != null) try { rs.close(); } catch (SQLException e) {}
+                    if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+                    if (conn != null) try { conn.close(); } catch (SQLException e) {}
+                }
+            }
+        }
+    %>
     <div class="container">
         <div class="header">
-            <img src="<%= request.getContextPath() %>/images/profile.png" alt="Profile Icon">
-            <h1>회원 정보</h1>
+            <img src="<%= request.getContextPath() %>/image/profile-icon.png" alt="Profile Icon">
+            <h1>비밀번호 변경</h1>
         </div>
         <hr>
-        <form action="<%= request.getContextPath() %>/change_password" method="post">
+        <form action="" method="post">
             <table class="info-table">
                 <tr>
                     <td>현재 비밀번호</td>
@@ -124,9 +198,12 @@
             </table>
             <div class="button-container">
                 <button type="submit" class="button">저장</button>
-                <button type="reset" class="button">취소</button>
+                <button type="button" class="button" onclick="cancelEdit()">취소</button>
             </div>
         </form>
+        <div style="text-align: center; margin-top: 20px;">
+            <p><%= message %></p>
+        </div>
     </div>
 </body>
 
