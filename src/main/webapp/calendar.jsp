@@ -64,7 +64,7 @@
             text-align: center;
         }
         td {
-            height: 50px;
+            height: 87px;
             vertical-align: top;
             position: relative;
             overflow: hidden;

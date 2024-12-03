@@ -72,6 +72,12 @@
         	background-color: #007bff;
       	}
       	
+      	.place-bottom{
+      		bottom: 12px;
+      		width: 160px;
+      		position: absolute;
+      	}
+      	
       	.logo-container {
   			display: flex;
   			align-items: center;
@@ -161,6 +167,7 @@
         <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
         <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
         <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
+        <div class="menu-item place-bottom" onclick="location.href='SignIn.jsp'">로그아웃</div>
       </div>
 	
     <div class="calendar-container">
