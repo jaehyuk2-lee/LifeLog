@@ -6,6 +6,7 @@ pageEncoding="UTF-8"%>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
     <style>
       body,
@@ -203,21 +204,21 @@ pageEncoding="UTF-8"%>
           
 
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            showError(emailInput, "Invalid email format.");
+            showError(emailInput, "이메일 형식이 아닙니다.");
             isValid = false;
           } else {
             clearError(emailInput);
           }
 
           if (password === "") {
-            showError(passwordInput, "Password cannot be empty.");
+            showError(passwordInput, "패스워드를 입력하세요.");
             isValid = false;
           } else {
             clearError(passwordInput);
           }
 
           if (password !== checkPassword) {
-            showError(checkPasswordInput, "Passwords do not match.");
+            showError(checkPasswordInput, "패스워드가 일치하지 않습니다.");
             isValid = false;
           } else {
             clearError(checkPasswordInput);

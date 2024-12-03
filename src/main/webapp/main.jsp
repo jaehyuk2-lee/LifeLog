@@ -27,6 +27,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
     <style>
         body {
@@ -39,11 +40,11 @@
         
         .container {
         	display: flex;
-        	
+        	height:100vh;
       	}
 
 		.menu-bar {
-        	flex: 0.2;
+        	flex: 0.3;
         	background-color: #274a8f;
         	display: flex;
         	flex-direction: column;
@@ -174,16 +175,14 @@
             <jsp:param name="month" value="<%= month %>" />
         </jsp:include>
     </div>
-    <%
-    String user_name = session.getAttribute("name").toString();
-    %>
+    
     <div class="side">
     	<div class="profile" onclick="location.href='profile.jsp'">
-            <div class="name"><%=user_name%></div>
+            <div class="name"><%=session.getAttribute("name").toString()%></div>
     		<img src="./images/profile.png" alt="User Icon" />
         </div>
     	<div class="summary">주간 목표 달성률</div>
     </div>
-    </div>
+   </div>
 </body>
 </html>

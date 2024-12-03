@@ -5,6 +5,7 @@ pageEncoding="UTF-8"%>
   <head>
     <link rel="stylesheet" href="" />
     <meta charset="UTF-8" />
+    <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
     <style type="text/css">
       body,
