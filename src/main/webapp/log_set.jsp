@@ -13,8 +13,8 @@
   	}
     body {
       font-family: Arial, sans-serif;
-      background-color: black;
-      color: #fff;
+      background-color: #1e1e1e;
+      color: white;
       display: flex;
     }
 
@@ -146,7 +146,6 @@
     <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
     <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
     <div class="menu-item active" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
-    <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
     <div class="menu-item" data-page="diary" onclick="location.href='일기추가.jsp'">일기</div>
   </div>
   

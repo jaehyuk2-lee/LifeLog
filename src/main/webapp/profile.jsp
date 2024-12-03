@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, javax.servlet.http.*, javax.servlet.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 
@@ -23,7 +23,7 @@
         }
 
         .menu-bar {
-            flex: 0.185; /* main.jsp와 동일하게 설정 */
+            flex: 0.185;
             background-color: #274a8f;
             display: flex;
             flex-direction: column;
@@ -74,8 +74,8 @@
         .content {
             flex: 1;
             padding: 20px;
-            padding-left: 40px; /* 메뉴바와의 간격 추가 */
-            margin-top: 40px; /* 위쪽 여백 추가 */
+            padding-left: 40px;
+            margin-top: 40px;
             overflow-y: auto;
             box-sizing: border-box;
         }
@@ -149,8 +149,11 @@
 
 <body>
     <%
+
+    String userEmail = (String) session.getAttribute("email"); // 세션에서 이메일 값 가져오기
+
     // 데이터베이스 연결 설정
-    String url = "jdbc:mysql://localhost:3306/user_logs_db?serverTimezone=UTC";
+    String url = "jdbc:mysql://localhost:3306/life_log_db?serverTimezone=UTC";
     String username = "lifelog_admin";
     String password = "q1w2e3r4";
     Connection conn = null;
@@ -158,42 +161,46 @@
     ResultSet rs = null;
 
     // 사용자 데이터 초기화
-    String name = "", id = "", email = "", gender = "", nationality = "", birthday = "", occupation = "", affiliation = "";
+    String name = "", id = "", gender = "",  birthday = "", job = "", org = "";
 
-    try {
-        // 데이터베이스 연결
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(url, username, password);
+    if (userEmail != null) { // 로그인된 사용자가 있을 경우
+        try {
+            // 데이터베이스 연결
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, username, password);
 
-        // 사용자 데이터를 조회 (예: id가 '1'인 사용자)
-        String sql = "SELECT * FROM users WHERE id = ?";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, "honggildong@lifelog.com"); // 예제 사용자 ID
-        rs = pstmt.executeQuery();
+            // 사용자 데이터를 조회 (세션에서 받은 userEmail로 데이터 조회)
+            String sql = "SELECT * FROM users WHERE id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userEmail); // 세션에서 가져온 사용자 이메일을 사용
+            rs = pstmt.executeQuery();
 
-        if (rs.next()) {
-            name = rs.getString("name");
-            id = rs.getString("id");
-            gender = rs.getString("gender").equals("M") ? "남성" : "여성"; // M -> 남성, F -> 여성
-            nationality = rs.getString("nationality");
-            birthday = rs.getString("birthday");
-            occupation = rs.getString("occupation");
-            affiliation = rs.getString("affiliation");
+            if (rs.next()) {
+                name = rs.getString("name");
+                id = rs.getString("id");
+                gender = rs.getString("gender").equals("MALE") ? "남성" : "여성";
+                birthday = rs.getString("birthday");
+                job = rs.getString("job");
+                org = rs.getString("org");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+            if (conn != null) try { conn.close(); } catch (SQLException e) {}
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        if (rs != null) try { rs.close(); } catch (SQLException e) {}
-        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
-        if (conn != null) try { conn.close(); } catch (SQLException e) {}
+    } else {
+        // 세션에 사용자 이메일이 없다면 로그인 페이지로 리다이렉션
+        response.sendRedirect("login.jsp");
     }
     %>
-    
+
     <div class="container">
         <!-- 메뉴바 -->
         <div class="menu-bar">
             <div class="logo-container">
-                <img src="./image/Logo.png" alt="Logo" class="logo" />
+                <img src="./images/Logo.png" alt="Logo" class="logo" />
                 <div class="logo-text">Life Log</div>
             </div>
             <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
@@ -206,7 +213,7 @@
         <!-- 콘텐츠 -->
         <div class="content">
             <div class="header">
-                <img src="<%= request.getContextPath() %>/images/profile.png" alt="Profile Icon">
+                <img src="<%= request.getContextPath() %>/images/profile-icon.png" alt="Profile Icon">
                 <h1>회원 정보</h1>
             </div>
             <hr>
@@ -224,20 +231,16 @@
                     <td><%= gender %></td>
                 </tr>
                 <tr>
-                    <td>국적</td>
-                    <td><%= nationality %></td>
-                </tr>
-                <tr>
                     <td>생일</td>
                     <td><%= birthday %></td>
                 </tr>
                 <tr>
                     <td>직업</td>
-                    <td><%= occupation %></td>
+                    <td><%= job %></td>
                 </tr>
                 <tr>
                     <td>소속</td>
-                    <td><%= affiliation %></td>
+                    <td><%= org %></td>
                 </tr>
             </table>
             <div class="button-container">

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, javax.servlet.http.*, javax.servlet.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 
@@ -8,7 +8,7 @@
     <title>Lifelog</title>
     <style>
         body {
-            background-color: #000;
+            background-color: #1e1e1e;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -23,7 +23,6 @@
             height: auto;
             padding-bottom: 20px;
             margin-top: 30px;
-            margin-left: 100px;
         }
 
         .header {
@@ -105,16 +104,23 @@
             window.location.href = "profile.jsp";
         }
     </script>
-
 </head>
 
 <body>
     <%
+    
+        String userEmail = (String) session.getAttribute("email");
+
+        if (userEmail == null) {
+            // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+            response.sendRedirect("SignIn.jsp");
+            return;
+        }
+
         // 사용자 입력 데이터 가져오기
         String currentPassword = request.getParameter("current_password");
         String newPassword = request.getParameter("new_password");
         String confirmPassword = request.getParameter("confirm_password");
-        String userId = "honggildong@lifelog.com"; // 세션이나 로그인된 사용자 ID 사용
 
         // 결과 메시지
         String message = "";
@@ -129,7 +135,7 @@
 
                 try {
                     // 데이터베이스 연결 설정
-                    String url = "jdbc:mysql://localhost:3306/user_logs_db?useSSL=false&serverTimezone=UTC";
+                    String url = "jdbc:mysql://localhost:3306/life_log_db?useSSL=false&serverTimezone=UTC";
                     String dbUsername = "lifelog_admin";
                     String dbPassword = "q1w2e3r4";
 
@@ -139,7 +145,7 @@
                     // 현재 비밀번호 확인
                     String sql = "SELECT password FROM users WHERE id = ?";
                     pstmt = conn.prepareStatement(sql);
-                    pstmt.setString(1, userId);
+                    pstmt.setString(1, userEmail);
                     rs = pstmt.executeQuery();
 
                     if (rs.next()) {
@@ -152,11 +158,11 @@
                             sql = "UPDATE users SET password = ? WHERE id = ?";
                             pstmt = conn.prepareStatement(sql);
                             pstmt.setString(1, newPassword);
-                            pstmt.setString(2, userId);
+                            pstmt.setString(2, userEmail);
                             int updatedRows = pstmt.executeUpdate();
 
                             if (updatedRows > 0) {
-                                message = "비밀번호가 성공적으로 변경되었습니다.";
+                                out.println("<script>alert('비밀번호가 성공적으로 변경되었습니다.'); location.href='profile.jsp';</script>");
                             } else {
                                 message = "비밀번호 변경에 실패했습니다.";
                             }
@@ -177,7 +183,7 @@
     %>
     <div class="container">
         <div class="header">
-            <img src="<%= request.getContextPath() %>/image/profile-icon.png" alt="Profile Icon">
+            <img src="<%= request.getContextPath() %>/images/profile-icon.png" alt="Profile Icon">
             <h1>비밀번호 변경</h1>
         </div>
         <hr>

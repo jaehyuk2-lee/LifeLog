@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, javax.servlet.http.*, javax.servlet.*" %>
 <%
     request.setCharacterEncoding("UTF-8");
 %>
@@ -12,7 +12,7 @@
     <title>Lifelog</title>
     <style>
         body {
-            background-color: #000;
+            background-color: #1e1e1e;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -118,60 +118,61 @@
             window.location.href = "profile.jsp";
         }
     </script>
-
 </head>
 
 <body>
     <%
+        // 세션에서 사용자 ID 가져오기
+        String userId = (String) session.getAttribute("email");
+
+        if (userId == null) {
+            // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
         // 데이터베이스 연결 설정
-        String url = "jdbc:mysql://localhost:3306/user_logs_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8";
+        String url = "jdbc:mysql://localhost:3306/life_log_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8";
         String dbUsername = "lifelog_admin";
         String dbPassword = "q1w2e3r4";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
-        // 사용자 ID (로그인 정보에서 가져오는 것으로 가정)
-        String userId = "honggildong@lifelog.com";
-
         // POST 요청 처리
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             String name = request.getParameter("name");
             String gender = request.getParameter("gender");
-            String nationality = request.getParameter("nationality");
-            String birthdate = request.getParameter("birthdate");
-            String occupation = request.getParameter("occupation");
-            String organization = request.getParameter("organization");
+            String birthday = request.getParameter("birthday");
+            String job = request.getParameter("job");
+            String org = request.getParameter("org");
 
             try {
                 // 데이터베이스 연결
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 conn = DriverManager.getConnection(url, dbUsername, dbPassword);
 
-                // 사용자 정보 업데이트 쿼리
                 // gender 값 변환
                 if ("남성".equals(gender)) {
-                    gender = "M";
+                    gender = "MALE";
                 } else if ("여성".equals(gender)) {
-                    gender = "F";
+                    gender = "FEMALE";
                 } else {
                     gender = null; // 예외 처리 (필요 시)
                 }
-                
+
                 // 사용자 정보 업데이트 쿼리
-                String sql = "UPDATE users SET name = ?, gender = ?, nationality = ?, birthday = ?, occupation = ?, affiliation = ? WHERE id = ?";
+                String sql = "UPDATE users SET name = ?, gender = ?, birthday = ?, job = ?, org = ? WHERE id = ?";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, name);
                 pstmt.setString(2, gender); // 변환된 gender 값 사용
-                pstmt.setString(3, nationality);
-                pstmt.setString(4, birthdate);
-                pstmt.setString(5, occupation);
-                pstmt.setString(6, organization);
-                pstmt.setString(7, userId);
-                
+                pstmt.setString(3, birthday);
+                pstmt.setString(4, job);
+                pstmt.setString(5, org);
+                pstmt.setString(6, userId);
+
                 int rowsUpdated = pstmt.executeUpdate();
                 if (rowsUpdated > 0) {
-                    // 저장 성공 시 profile.jsp로 리다이렉트
-                    response.sendRedirect("profile.jsp");
+                    out.println("<script>alert('회원정보가 성공적으로 변경되었습니다.'); location.href='profile.jsp';</script>");
                 } else {
                     out.println("<p style='color: red;'>회원 정보 수정에 실패했습니다.</p>");
                 }
@@ -187,10 +188,9 @@
         // GET 요청: 기존 데이터 불러오기
         String name = "";
         String gender = "";
-        String nationality = "";
-        String birthdate = "";
-        String occupation = "";
-        String organization = "";
+        String birthday = "";
+        String job = "";
+        String org = "";
         ResultSet rs = null;
 
         try {
@@ -199,7 +199,7 @@
             conn = DriverManager.getConnection(url, dbUsername, dbPassword);
 
             // 사용자 정보 조회 쿼리
-            String sql = "SELECT name, gender, nationality, birthday, occupation, affiliation FROM users WHERE id = ?";
+            String sql = "SELECT name, gender, birthday, job, org FROM users WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, userId);
             rs = pstmt.executeQuery();
@@ -207,11 +207,10 @@
             // 데이터 가져오기
             if (rs.next()) {
                 name = rs.getString("name");
-                gender = rs.getString("gender");
-                nationality = rs.getString("nationality");
-                birthdate = rs.getString("birthday");
-                occupation = rs.getString("occupation");
-                organization = rs.getString("affiliation");
+                gender = "MALE".equals(rs.getString("gender")) ? "남성" : "여성";
+                birthday = rs.getString("birthday");
+                job = rs.getString("job");
+                org = rs.getString("org");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,7 +223,7 @@
 
     <div class="container">
         <div class="header">
-            <img src="<%= request.getContextPath() %>/image/profile-icon.png" alt="Profile Icon">
+            <img src="<%= request.getContextPath() %>/images/profile-icon.png" alt="Profile Icon">
             <h1>회원 정보 수정</h1>
         </div>
         <hr>
@@ -244,20 +243,16 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>국적</td>
-                    <td><input type="text" name="nationality" value="<%= nationality %>" required></td>
-                </tr>
-                <tr>
                     <td>생일</td>
-                    <td><input type="date" name="birthdate" value="<%= birthdate %>" required></td>
+                    <td><input type="date" name="birthday" value="<%= birthday %>" required></td>
                 </tr>
                 <tr>
                     <td>직업</td>
-                    <td><input type="text" name="occupation" value="<%= occupation %>" required></td>
+                    <td><input type="text" name="job" value="<%= job %>" required></td>
                 </tr>
                 <tr>
                     <td>소속</td>
-                    <td><input type="text" name="organization" value="<%= organization %>" required></td>
+                    <td><input type="text" name="org" value="<%= org %>" required></td>
                 </tr>
             </table>
             <div class="button-container">

@@ -6,6 +6,7 @@ pageEncoding="UTF-8"%>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
     <style>
       body,
@@ -203,21 +204,21 @@ pageEncoding="UTF-8"%>
           
 
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            showError(emailInput, "Invalid email format.");
+            showError(emailInput, "이메일 형식이 아닙니다.");
             isValid = false;
           } else {
             clearError(emailInput);
           }
 
           if (password === "") {
-            showError(passwordInput, "Password cannot be empty.");
+            showError(passwordInput, "패스워드를 입력하세요.");
             isValid = false;
           } else {
             clearError(passwordInput);
           }
 
           if (password !== checkPassword) {
-            showError(checkPasswordInput, "Passwords do not match.");
+            showError(checkPasswordInput, "패스워드가 일치하지 않습니다.");
             isValid = false;
           } else {
             clearError(checkPasswordInput);
@@ -244,7 +245,7 @@ pageEncoding="UTF-8"%>
 
           <div class="signup-form">
             <label for="email">Email:</label>
-    		<input type="email" id="email" name="email" required>
+    		<input type="email" id="email" placeholder="Email" name="email" required>
             <label for="password" >Password</label>
             <input
               type="password"
@@ -262,13 +263,13 @@ pageEncoding="UTF-8"%>
               required
             />
 
-            <button type="button" class="next">Next</button>
+            <button type="button" class="next">다음</button>
             <button
               type="button"
               class="reset"
               onclick="location.href='SignIn.jsp'"
             >
-              Before
+             이전으로
             </button>
           </div>
         </div>
@@ -305,8 +306,8 @@ pageEncoding="UTF-8"%>
                 required
               />
             </div>
-            <button type="submit" class="complete">Complete</button>
-            <button type="reset" class="reset">Reset</button>
+            <button type="submit" class="complete">완료</button>
+            <button type="reset" class="reset">다시쓰기</button>
           </div>
         </div>
         <div class="empty"></div>
