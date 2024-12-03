@@ -14,12 +14,15 @@
             text-align: center;
             margin: 0;
             padding: 0;
+            display:flex;
+            height:100vh;
         }
 
         .container {
             margin: 20px auto;
             width: 90%;
             max-width: 800px;
+            flex:1;
         }
 
         h1 {
@@ -88,9 +91,68 @@
             font-weight: bold;
             font-size: 18px;
         }
+		.menu-bar {
+        	flex: 0.2;
+        	background-color: #274a8f;
+        	display: flex;
+        	flex-direction: column;
+        	align-items: center;
+        	padding: 20px 10px;
+        	gap: 20px;
+		}
+
+      	.menu-item {
+        	display: flex;
+        	align-items: center;
+        	justify-content: center;
+        	padding: 15px;
+        	width: 80%;
+        	color: white;
+        	text-align: center;
+        	background-color: #274a8f;
+        	border-radius: 5px;
+        	cursor: pointer;
+        	transition: background-color 0.3s ease;
+      	}
+
+      	.menu-item:hover,
+      	.menu-item.active {
+        	background-color: #007bff;
+      	}
+      	
+      	.logo-container {
+  			display: flex;
+  			align-items: center;
+  			gap: 10px;
+  			margin-bottom: 20px;
+  		}
+
+
+		.logo {
+  		    height: 50px;
+  			width: auto;
+  			}
+
+		.logo-text {
+  			font-size: 24px;
+  			font-weight: bold;
+  			color: white;
+		}
     </style>
 </head>
 <body>
+
+	<div class="menu-bar">
+      	<div class="logo-container">
+  			<img src="./image/Logo.png" alt="Logo" class="logo" />
+  			<div class="logo-text">Life Log</div>
+		</div>
+        <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
+        <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+        <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+        <div class="menu-item active" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+        <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
+      </div>
     <div class="container">
         <h1>목표관리</h1>
         <table id="goalTable">

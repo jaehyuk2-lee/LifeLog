@@ -1,125 +1,275 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*, java.util.*" %>
+<%
+    // 데이터베이스 연결 정보
+    String dbUrl = "jdbc:mysql://localhost:3306/user_logs_db?serverTimezone=UTC";
+    String dbUser = "lifelog_admin";
+    String dbPassword = "q1w2e3r4";
+
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+
+    // log_name 목록과 데이터를 저장할 맵
+    Map<String, double[]> logDataMap = new LinkedHashMap<>();
+    Map<String, Double> goalAchievementMap = new LinkedHashMap<>();
+    
+
+    try {
+        // 데이터베이스 연결
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+
+        // log_name 목록 가져오기
+        String logNameQuery = "SELECT DISTINCT log_name FROM logs";
+        pstmt = conn.prepareStatement(logNameQuery);
+        rs = pstmt.executeQuery();
+        List<String> logNames = new ArrayList<>();
+        while (rs.next()) {
+            logNames.add(rs.getString("log_name"));
+        }
+        rs.close();
+        pstmt.close();
+
+        // 요일별 데이터 및 달성률 계산
+        for (String logName : logNames) {
+            double[] weeklyData = new double[7];
+            Arrays.fill(weeklyData, 0.0); // 기본값 0으로 초기화
+            double totalInput = 0.0;
+            int activeDays = 0;
+            double goalValue = 0.0;
+
+            String query = 
+                "SELECT day_of_week, SUM(input_value) AS total_input, COUNT(DISTINCT date_entered) AS active_days, goal_value " +
+                "FROM logs " +
+                "WHERE log_name = ? AND WEEK(date_entered, 1) = ( " + "    SELECT MAX(WEEK(date_entered, 1)) FROM logs WHERE log_name = ? " +
+                ") " + "GROUP BY day_of_week, goal_value";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, logName);
+            pstmt.setString(2, logName);
+
+            rs = pstmt.executeQuery();
+
+            Map<String, Integer> dayIndexMap = Map.of(
+                "월요일", 0,
+                "화요일", 1,
+                "수요일", 2,
+                "목요일", 3,
+                "금요일", 4,
+                "토요일", 5,
+                "일요일", 6
+            );
+
+            while (rs.next()) {
+                String day = rs.getString("day_of_week");
+                double dayTotalInput = rs.getDouble("total_input");
+                int dayActiveDays = rs.getInt("active_days");
+                goalValue = rs.getDouble("goal_value"); // 동일 log_name이므로 goal_value는 동일
+
+                totalInput += dayTotalInput;
+                activeDays += dayActiveDays;
+
+                if (dayIndexMap.containsKey(day)) {
+                    int index = dayIndexMap.get(day);
+                    weeklyData[index] = dayTotalInput;
+                }
+            }
+
+            // 달성률 계산: (totalInput / (activeDays * goalValue)) * 100
+            if (activeDays > 0 && goalValue > 0) {
+                double achievementRate = (totalInput / (activeDays * goalValue)) * 100;
+                goalAchievementMap.put(logName, achievementRate);
+
+            }
+
+            logDataMap.put(logName, weeklyData);
+            rs.close();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (rs != null) rs.close();
+        if (pstmt != null) pstmt.close();
+        if (conn != null) conn.close();
+    }
+
+    // JSON 데이터를 생성
+    StringBuilder graphDataJsonBuilder = new StringBuilder();
+    graphDataJsonBuilder.append("{");
+    int logIndex = 0;
+    for (Map.Entry<String, double[]> entry : logDataMap.entrySet()) {
+        graphDataJsonBuilder.append("\"").append(entry.getKey()).append("\": [");
+        double[] data = entry.getValue();
+        for (int i = 0; i < data.length; i++) {
+            graphDataJsonBuilder.append(data[i]);
+            if (i < data.length - 1) {
+                graphDataJsonBuilder.append(", ");
+            }
+        }
+        graphDataJsonBuilder.append("]");
+        if (logIndex < logDataMap.size() - 1) {
+            graphDataJsonBuilder.append(", ");
+        }
+        logIndex++;
+    }
+    graphDataJsonBuilder.append("}");
+    String graphDataJson = graphDataJsonBuilder.toString();
+
+    StringBuilder goalAchievementJsonBuilder = new StringBuilder();
+    goalAchievementJsonBuilder.append("{");
+    int achievementIndex = 0;
+    for (Map.Entry<String, Double> entry : goalAchievementMap.entrySet()) {
+        goalAchievementJsonBuilder.append("\"").append(entry.getKey()).append("\": ").append(entry.getValue());
+        if (achievementIndex < goalAchievementMap.size() - 1) {
+            goalAchievementJsonBuilder.append(", ");
+        }
+        achievementIndex++;
+    }
+    goalAchievementJsonBuilder.append("}");
+    String goalAchievementJson = goalAchievementJsonBuilder.toString();
+
+    request.setAttribute("graphData", graphDataJson);
+    request.setAttribute("goalAchievementData", goalAchievementJson);
+    request.setAttribute("logNames", logDataMap.keySet());
+
+
+%>
 <!DOCTYPE html>
 <html>
 <head>
     <title>로그 분석</title>
     <style>
         body {
-            margin: 0;
-            background-color: black;
-            color: white;
             font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            margin: 0;
+            padding: 0;
             display: flex;
         }
 
-        .menu-placeholder {
-            width: 20%; /* 메뉴바 공간 */
-            background-color: black; /* 메뉴바 배경 */
-            height: 100vh; /* 화면 전체 높이 */
+        .container {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 100vh;
+            width: 100%;
         }
+
+        .menu-bar {
+            flex: 0.184;
+            background-color: #274a8f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            gap: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .menu-item {
+            padding: 15px;
+            width: 80%;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background-color: #007bff;
+        }
+
+        .logo-container {
+  			display: flex;
+  			align-items: center;
+  			gap: 10px;
+  			margin-bottom: 20px;
+  		}
+
+
+		.logo {
+  		    height: 50px;
+  			width: auto;
+  			}
+
+		.logo-text {
+  			font-size: 24px;
+  			font-weight: bold;
+  			color: white;
+		}
 
         .main-content {
-            width: 80%; /* 나머지 화면 공간 */
-            margin: 0;
-            padding: 20px;
+            flex: 1;
+            padding-left: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
-        h1 {
-            color: white;
-            margin-top: 20px;
+        .section1 {
+            margin-top: 40px;
         }
 
-        .main-content hr {
-            height: 2px;
-            width: 100%;
+        .section2 {
+            margin-top: 60px;
+        }
+
+        hr {
+            height: 5px;
             border: none;
             background-color: blue;
-            margin: 20px 0; /* 파란 선 위아래 여백 증가 */
+            margin-top: 10px;
+            margin-bottom: 30px;
         }
 
-        .section {
-            margin-bottom: 100px; /* 주간 로그 분석과 일일 로그 분석 간격 증가 */
-        }
-
-        .graph-container, .pie-container {
+        .graph-container {
             margin: 20px auto;
+            margin-top: 40px;
             width: 90%;
             text-align: center;
-        }
-
-        .selector {
-            margin: 20px;
-            display: flex;
-            align-items: center; /* 세로 정렬을 중앙으로 */
-            gap: 10px; /* label과 select 간의 간격 */
-        }
-
-        select {
-            padding: 10px;
-            font-size: 16px;
-            background-color: #444;
-            color: white;
-            border: 1px solid #222;
-            border-radius: 5px;
-        }
-
-        .pie-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 50px; /* 파란 선과 그래프 간 간격 증가 */
-        }
-
-        .pie-chart {
-            width: 30%;
-        }
-
-        .pie-label {
-            margin-top: 10px;
-            color: white;
-            font-size: 14px;
         }
 
         canvas {
             display: block;
             margin: 0 auto;
         }
+
+
+        #achievementContainer {
+            display: flex;
+            flex-wrap: wrap; /* 한 줄에 두 개씩 정렬 */
+            justify-content: space-around;
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        let chart; // Chart.js 인스턴스
+        let chart;
 
-        function loadGraph(graphType = "공부시간") {
-            const graphData = {
-                "운동량": [30, 40, 50, 60, 70, 80, 90],
-                "음주": [10, 20, 30, 40, 50, 60, 70],
-                "공부시간": [50, 30, 70, 20, 80, 40, 60],
-                "수면시간": [70, 60, 50, 40, 30, 20, 10]
-            };
+        // 전체 데이터
+        const graphData = JSON.parse('<%= request.getAttribute("graphData") %>');
+        const goalAchievementData = JSON.parse('<%= request.getAttribute("goalAchievementData") %>');
 
-            const labels = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
-            const data = graphData[graphType];
+        console.log("goalAchievementData:", goalAchievementData);
 
+        // 그래프 그리기
+        function drawGraph(logName) {
+            const data = graphData[logName];
             const ctx = document.getElementById('graphCanvas').getContext('2d');
-
-            // 기존 차트가 있으면 삭제
             if (chart) {
                 chart.destroy();
             }
 
-            // 새로운 차트 생성
             chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
                     datasets: [{
-                        label: graphType,
+                        label: logName,
                         data: data,
-                        backgroundColor: 'rgba(255, 255, 255, 1)', // 막대 내부 색상
-                        borderColor: 'rgba(255, 255, 255, 1)',       // 막대 테두리 색상
-                        maxBarThickness: 50,
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                        borderColor: 'rgba(255, 255, 255, 1)',
                         borderWidth: 1
                     }]
                 },
@@ -138,7 +288,6 @@
                         }
                     },
                     plugins: {
-                        
                         legend: {
                             display: false
                         }
@@ -147,90 +296,128 @@
             });
         }
 
-        function loadPieCharts() {
-            const pieData = {
-                labels: ["운동량", "수면", "수분 섭취"],
-                values: [78, 78, 78]
-            };
+        function createPieChartWithTitle(logName, index) {
+            const container = document.createElement('div');
+            console.log("createPieChartWithTitle logName:", logName); // 디버깅 추가
+            
+            container.style.width = '48%'; // 한 줄에 두 개씩 정렬
+            container.style.margin = '1%'; // 그래프 간 간격
+            container.style.textAlign = 'center';
+            container.style.display = 'inline-block'; // Flex 정렬에 포함되도록 설정
 
-            const colors = ["#FF4D4D", "#4DFF4D", "#4D4DFF"];
+            // 제목 추가
+            const title = document.createElement('h3');
+            title.textContent = logName
+            title.style.color = 'white';
+            title.style.marginBottom = '10px';
+            container.appendChild(title);
 
-            const charts = document.querySelectorAll(".pie-chart canvas");
+            // 캔버스 추가
+            const canvasId = `achievementCanvas${index}`;
+            const canvasElement = document.createElement('canvas');
+            canvasElement.id = canvasId;
+            canvasElement.width = 300; // 그래프 크기 축소
+            canvasElement.height = 300;
+            container.appendChild(canvasElement);
 
-            charts.forEach((canvas, index) => {
-                const ctx = canvas.getContext('2d');
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: [pieData.labels[index]],
-                        datasets: [{
-                            data: [pieData.values[index], 100 - pieData.values[index]],
-                            backgroundColor: [colors[index], "rgba(0, 0, 0, 0.2)"]
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: false
-                            }
+            // 컨테이너에 추가
+            const achievementContainer = document.getElementById('achievementContainer');
+            achievementContainer.appendChild(container);
+
+            // 그래프 생성
+            const ctx = canvasElement.getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: [logName + " 달성", logName + " 미달성"],
+                    datasets: [{
+                        data: [
+                            goalAchievementData[logName],
+                            100 - goalAchievementData[logName]
+                        ],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 99, 132, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
                         },
-                        cutout: "50%"
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.raw.toFixed(2) + '%';
+                                    return label;
+                                }
+                            }
+                        }
                     }
-                });
+                }
             });
         }
 
-        // 페이지 로드 시 기본 그래프 로드
+        // 페이지 로드 시 실행
         window.onload = function () {
-            loadGraph();
-            loadPieCharts();
+            const logSelector = document.getElementById('logSelector');
+            drawGraph(logSelector.value);
+            logSelector.addEventListener('change', function () {
+                drawGraph(this.value);
+            });
+
+            
+
+            // 원그래프 생성
+            const achievementContainer = document.getElementById('achievementContainer');
+            achievementContainer.innerHTML = ''; // 기존 그래프 초기화
+            Object.keys(goalAchievementData).forEach((logName, index) => {
+                createPieChartWithTitle(logName, index);
+            });
         };
-    </script>
+
+</script>
 </head>
 <body>
-    <div class="menu-placeholder">
-        <!-- 왼쪽 메뉴바 공간 -->
-    </div>
-    <div class="main-content">
-        <!-- 주간 로그 분석 -->
-        <div class="section">
-            <h1>주간 로그 분석</h1>
+    <div class="container">
+        <div class="menu-bar">
+            <div class="logo-container">
+                <img src="./image/Logo.png" alt="Logo" class="logo" />
+                <div class="logo-text">Life Log</div>
+          </div>
+          <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
+          <div class="menu-item active" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+          <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+          <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+          <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
+        </div>
+
+
+        <div class="main-content">
+            <h1 class="section1">주간 로그 분석</h1>
             <hr>
-            <div class="selector">
-                <label for="graphSelector">그래프 종류:</label>
-                <select id="graphSelector" onchange="loadGraph(this.value)">
-                    <option value="운동량">운동량</option>
-                    <option value="음주">음주</option>
-                    <option value="공부시간" selected>공부시간</option>
-                    <option value="수면시간">수면시간</option>
+            <div>
+                <label for="logSelector">로그 선택:</label>
+                <select id="logSelector">
+                    <% for (String logName : (Set<String>) request.getAttribute("logNames")) { %>
+                        <option value="<%= logName %>"> <%= logName %></option>
+                    <% } %>
                 </select>
             </div>
             <div class="graph-container">
                 <canvas id="graphCanvas" width="900" height="400"></canvas>
             </div>
-        </div>
-
-        <!-- 일일 로그 분석 -->
-        <div class="section">
-            <h1>일일 로그 분석</h1>
+            <h1 class="section2">주간 달성률 분석</h1>
             <hr>
-            <div class="pie-container">
-                <div class="pie-chart">
-                    <canvas width="200" height="200"></canvas>
-                    <div class="pie-label">운동량</div>
-                </div>
-                <div class="pie-chart">
-                    <canvas width="200" height="200"></canvas>
-                    <div class="pie-label">수면</div>
-                </div>
-                <div class="pie-chart">
-                    <canvas width="200" height="200"></canvas>
-                    <div class="pie-label">수분 섭취</div>
-                </div>
-            </div>
+            <div id="achievementContainer" class="graph-container">
+                <!-- 개별 원그래프가 동적으로 추가됩니다. -->
+
         </div>
     </div>
 </body>
