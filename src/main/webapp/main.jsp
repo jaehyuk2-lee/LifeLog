@@ -43,7 +43,7 @@
       	}
 
 		.menu-bar {
-        	flex: 0.3;
+        	flex: 0.2;
         	background-color: #274a8f;
         	display: flex;
         	flex-direction: column;
