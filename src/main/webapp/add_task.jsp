@@ -1,6 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%
+    // 브라우저 캐싱 방지
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
+    // 세션 확인: 세션이 없으면 로그인 페이지로 리디렉션
+    if (session.getAttribute("email") == null) {
+        response.sendRedirect("signin.jsp");
+        return;
+    }
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -91,7 +104,7 @@
         }
     }
 
-    // Handle GET request to delete a task
+    
     String deleteTaskId = request.getParameter("deleteTaskId");
     if (deleteTaskId != null) {
         Connection conn = null;

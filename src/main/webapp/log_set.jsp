@@ -13,8 +13,8 @@
   	}
     body {
       font-family: Arial, sans-serif;
-      background-color: black;
-      color: #fff;
+      background-color: #1e1e1e;
+      color: white;
       display: flex;
     }
 

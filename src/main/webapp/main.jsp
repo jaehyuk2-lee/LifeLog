@@ -1,6 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.Calendar" %>
 <%
+    // 브라우저 캐싱 방지
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
+    // 세션 확인: 세션이 없으면 로그인 페이지로 리디렉션
+    if (session.getAttribute("email") == null) {
+        response.sendRedirect("SignIn.jsp");
+        return;
+    }
+%>
+<%
     int year = 0;
     int month = 0;
 
@@ -167,7 +179,7 @@
         <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
         <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
         <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
-        <div class="menu-item place-bottom" onclick="location.href='SignIn.jsp'">로그아웃</div>
+        <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
       </div>
 	
     <div class="calendar-container">
@@ -186,7 +198,7 @@
     <div class="side">
     	<div class="profile" onclick="location.href='profile.jsp'">
             <div class="name"><%=session.getAttribute("name").toString()%></div>
-    		<img src="./images/profile.png" alt="User Icon" />
+    		<img src="./images/profile-icon.png" alt="User Icon" />
         </div>
     	<div class="summary">주간 목표 달성률</div>
     </div>

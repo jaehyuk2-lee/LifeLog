@@ -245,7 +245,7 @@ pageEncoding="UTF-8"%>
 
           <div class="signup-form">
             <label for="email">Email:</label>
-    		<input type="email" id="email" name="email" required>
+    		<input type="email" id="email" placeholder="Email" name="email" required>
             <label for="password" >Password</label>
             <input
               type="password"
@@ -263,13 +263,13 @@ pageEncoding="UTF-8"%>
               required
             />
 
-            <button type="button" class="next">Next</button>
+            <button type="button" class="next">다음</button>
             <button
               type="button"
               class="reset"
               onclick="location.href='SignIn.jsp'"
             >
-              Before
+             이전으로
             </button>
           </div>
         </div>
@@ -306,8 +306,8 @@ pageEncoding="UTF-8"%>
                 required
               />
             </div>
-            <button type="submit" class="complete">Complete</button>
-            <button type="reset" class="reset">Reset</button>
+            <button type="submit" class="complete">완료</button>
+            <button type="reset" class="reset">다시쓰기</button>
           </div>
         </div>
         <div class="empty"></div>
