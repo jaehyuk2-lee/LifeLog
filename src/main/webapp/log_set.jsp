@@ -6,23 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>로그 기록</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
+  	html, body {
+      height: 100%;
       margin: 0;
       padding: 0;
+  	}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: black;
+      color: #fff;
+      display: flex;
     }
 
-    .container {
-      margin: 20px auto;
-      width: 90%;
-      max-width: 800px;
+    .content-container {
+      flex: 0.8; /* 콘텐츠 영역 비율 */
+      margin: 20px;
+      width: 100%;
     }
 
     h1 {
       font-family: Arial;
-      margin-bottom: 5px;
+      margin-bottom: 20px;
       color: #fff;
       border-bottom: 2px solid #2D488B;
       padding-bottom: 10px;
@@ -83,11 +87,70 @@
     .list-dot {
       font-size: 18px;
       text-align: center;
+      }
+      
+    .menu-bar {
+      flex: 0.1; /* 메뉴바 비율 */
+      background-color: #274a8f; /* 메뉴바 배경색 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 10px;
+      gap: 20px;
+    }
+    
+    .menu-bar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .menu-bar .logo {
+      height: 50px;
+      width: auto;
+    }
+
+    .menu-bar .logo-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      width: 80%;
+      color: white;
+      text-align: center;
+      background-color: #274a8f;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background-color: #007bff;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+<div class="menu-bar">
+    <div class="logo-container">
+      <img src="./image/Logo.png" alt="Logo" class="logo" />
+      <div class="logo-text">Life Log</div>
+    </div>
+    <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
+    <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+    <div class="menu-item active" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+    <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+    <div class="menu-item" data-page="diary" onclick="location.href='일기추가.jsp'">일기</div>
+  </div>
+  
+  <div class="content-container">
     <h1>로그 기록</h1>
     <table id="logTable">
       <thead>

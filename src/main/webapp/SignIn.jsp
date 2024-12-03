@@ -155,10 +155,10 @@ pageEncoding="UTF-8"%>
         const menuItems = document.querySelectorAll(".menu-item");
         const previewImage = document.querySelector(".preview img");
         const images = [
-          "./image/2.jpg",
-          "./image/3.jpg",
-          "./image/analysis.jpg",
-          "./image/4.PNG",
+          "./images/1.gif",
+          "./images/2.gif",
+          "./images/analysis.jpg",
+          "./images/4.gif",
         ];
         let currentIndex = 0;
         let timer;
@@ -231,13 +231,14 @@ pageEncoding="UTF-8"%>
         <div class="login-header">
           <h1>Life Log</h1>
         </div>
-        <form class="login-form">
+        <form action="SignIn_Check.jsp" method="post" class="login-form">
           <label for="email">Email</label>
-          <input type="email" id="email" placeholder="Email" required />
+          <input type="email" name="email" id="email" placeholder="Email" required />
 
           <label for="password">Password</label>
           <input
             type="password"
+            name="password"
             id="password"
             placeholder="Password"
             required

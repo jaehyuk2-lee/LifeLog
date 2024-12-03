@@ -1,27 +1,83 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
 <!DOCTYPE html>
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
-    <title>회원 정보</title>
+    <title>Life Log</title>
     <style>
         body {
-            background-color: #000;
-            color: white;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #1e1e1e;
+            color: white;
             margin: 0;
+            padding: 0;
+            display: flex;
         }
 
         .container {
-            width: 1000px;
-            height: auto;
-            padding-bottom: 20px;
-            margin-top: 30px;
-            margin-left: 100px;
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .menu-bar {
+            flex: 0.185; /* main.jsp와 동일하게 설정 */
+            background-color: #274a8f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            gap: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            width: 80%;
+            color: white;
+            text-align: center;
+            background-color: #274a8f;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background-color: #007bff;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            padding-left: 40px; /* 메뉴바와의 간격 추가 */
+            margin-top: 40px; /* 위쪽 여백 추가 */
+            overflow-y: auto;
+            box-sizing: border-box;
         }
 
         .header {
@@ -42,7 +98,7 @@
             margin: 0;
         }
 
-        .container hr {
+        .content hr {
             height: 5px;
             width: 100%;
             border: none;
@@ -92,49 +148,102 @@
 </head>
 
 <body>
+    <%
+    // 데이터베이스 연결 설정
+    String url = "jdbc:mysql://localhost:3306/user_logs_db?serverTimezone=UTC";
+    String username = "lifelog_admin";
+    String password = "q1w2e3r4";
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+
+    // 사용자 데이터 초기화
+    String name = "", id = "", email = "", gender = "", nationality = "", birthday = "", occupation = "", affiliation = "";
+
+    try {
+        // 데이터베이스 연결
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection(url, username, password);
+
+        // 사용자 데이터를 조회 (예: id가 '1'인 사용자)
+        String sql = "SELECT * FROM users WHERE id = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, "honggildong@lifelog.com"); // 예제 사용자 ID
+        rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            name = rs.getString("name");
+            id = rs.getString("id");
+            gender = rs.getString("gender").equals("M") ? "남성" : "여성"; // M -> 남성, F -> 여성
+            nationality = rs.getString("nationality");
+            birthday = rs.getString("birthday");
+            occupation = rs.getString("occupation");
+            affiliation = rs.getString("affiliation");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (rs != null) try { rs.close(); } catch (SQLException e) {}
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
+    }
+    %>
+    
     <div class="container">
-        <div class="header">
-            <img src="<%= request.getContextPath() %>/images/profile.png" alt="Profile Icon">
-            <h1>회원 정보</h1>
+        <!-- 메뉴바 -->
+        <div class="menu-bar">
+            <div class="logo-container">
+                <img src="./image/Logo.png" alt="Logo" class="logo" />
+                <div class="logo-text">Life Log</div>
+            </div>
+            <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
+            <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+            <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+            <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+            <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
         </div>
-        <hr>
-        <table class="info-table">
-            <tr>
-                <td>이름</td>
-                <td><%= "홍길동" %></td>
-            </tr>
-            <tr>
-                <td>아이디</td>
-                <td><%= "HogilDong" %></td>
-            </tr>
-            <tr>
-                <td>이메일</td>
-                <td><%= "Gil-Dong@gmail.com" %></td>
-            </tr>
-            <tr>
-                <td>성별</td>
-                <td><%= "male" %></td>
-            </tr>
-            <tr>
-                <td>국적</td>
-                <td><%= "Korea" %></td>
-            </tr>
-            <tr>
-                <td>생일</td>
-                <td><%= "2002.01.01" %></td>
-            </tr>
-            <tr>
-                <td>직업</td>
-                <td><%= "student" %></td>
-            </tr>
-            <tr>
-                <td>소속</td>
-                <td><%= "dongguk" %></td>
-            </tr>
-        </table>
-        <div class="button-container">
-            <button class="button" onclick="location.href='<%= request.getContextPath() %>/editProfile.jsp'">수정</button>
-            <button class="button" onclick="location.href='<%= request.getContextPath() %>/changePassword.jsp'">비밀번호 변경</button>
+
+        <!-- 콘텐츠 -->
+        <div class="content">
+            <div class="header">
+                <img src="<%= request.getContextPath() %>/images/profile.png" alt="Profile Icon">
+                <h1>회원 정보</h1>
+            </div>
+            <hr>
+            <table class="info-table">
+                <tr>
+                    <td>이름</td>
+                    <td><%= name %></td>
+                </tr>
+                <tr>
+                    <td>아이디</td>
+                    <td><%= id %></td>
+                </tr>
+                <tr>
+                    <td>성별</td>
+                    <td><%= gender %></td>
+                </tr>
+                <tr>
+                    <td>국적</td>
+                    <td><%= nationality %></td>
+                </tr>
+                <tr>
+                    <td>생일</td>
+                    <td><%= birthday %></td>
+                </tr>
+                <tr>
+                    <td>직업</td>
+                    <td><%= occupation %></td>
+                </tr>
+                <tr>
+                    <td>소속</td>
+                    <td><%= affiliation %></td>
+                </tr>
+            </table>
+            <div class="button-container">
+                <button class="button" onclick="location.href='<%= request.getContextPath() %>/edit_profile.jsp'">수정</button>
+                <button class="button" onclick="location.href='<%= request.getContextPath() %>/change_pwd.jsp'">비밀번호 변경</button>
+            </div>
         </div>
     </div>
 </body>

@@ -39,11 +39,11 @@
         
         .container {
         	display: flex;
-        	height: 100vh;
+        	
       	}
 
 		.menu-bar {
-        	flex: 0.3;
+        	flex: 0.2;
         	background-color: #274a8f;
         	display: flex;
         	flex-direction: column;
@@ -152,22 +152,22 @@
 <body>
 	<div class="container">
       <div class="menu-bar">
-      	<div class="logo-container">
-  			<img src="./image/Logo.png" alt="Logo" class="logo" />
+      	<div class="logo-container"  onclick="location.href='main.jsp'">
+  			<img src="./images/Logo.png" alt="Logo" class="logo" />
   			<div class="logo-text">Life Log</div>
 		</div>
-        <div class="menu-item active" data-page="main">메인</div>
-        <div class="menu-item" data-page="log-analysis">로그 분석</div>
-        <div class="menu-item" data-page="log-record">로그 기록</div>
-        <div class="menu-item" data-page="goal-management">목표 관리</div>
-        <div class="menu-item" data-page="diary">일기</div>
+        <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
+        <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+        <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+        <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
+        <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
       </div>
 	
     <div class="calendar-container">
         <div class="calendar-header">
-            <a href="main.jsp?year=<%= year %>&month=<%= month - 1 %>">◀</a>
-            <span><%= year %>년 <%= month + 1 %>월</span>
-            <a href="main.jsp?year=<%= year %>&month=<%= month + 1 %>">▶</a>
+            <a href="main.jsp?year=<%= (month == 0 ? year - 1 : year) %>&month=<%= (month + 11) % 12 %>">◀</a>
+			<span><%= year %>년 <%= month + 1 %>월</span>
+			<a href="main.jsp?year=<%= (month == 11 ? year + 1 : year) %>&month=<%= (month + 1) % 12 %>">▶</a>
         </div>
 
         <jsp:include page="calendar.jsp">
@@ -175,10 +175,13 @@
             <jsp:param name="month" value="<%= month %>" />
         </jsp:include>
     </div>
+    <%
+    String user_name = session.getAttribute("name").toString();
+    %>
     <div class="side">
-    	<div class="profile">
-            <div class="name">재혁리</div>
-    		<img src="./image/profile-icon.png" alt="User Icon" />
+    	<div class="profile" onclick="location.href='profile.jsp'">
+            <div class="name"><%=user_name%></div>
+    		<img src="./images/profile.png" alt="User Icon" />
         </div>
     	<div class="summary">주간 목표 달성률</div>
     </div>
