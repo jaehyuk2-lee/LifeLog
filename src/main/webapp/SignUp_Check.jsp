@@ -16,7 +16,6 @@
             color: white;
             display: flex;
             align-items: center;
-            justify-content: center;
             flex-direction: column;
         }
         button {
@@ -81,7 +80,7 @@
             insertStmt.executeUpdate();
         }
     } catch (Exception e) {
-        out.println("<p>DB 연동 오류입니다: " + e.getMessage() + "</p>");
+        out.println("DB 연동 오류입니다: " + e.getMessage());
     } finally {
         
         if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
@@ -94,7 +93,7 @@
     if (isDuplicate) {
 %>
     <h1>회원가입 실패: ID가 이미 존재합니다.</h1>
-    <button type="button" onclick="location.href='SignUp.jsp'">Try Again</button>
+    <button type="button" onclick="location.href='SignUp.jsp'">Sign Up</button>
 <%
     } else {
 %>
