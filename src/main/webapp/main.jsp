@@ -159,7 +159,6 @@
         <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
         <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
         <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
-        <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
         <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
       </div>
 	
