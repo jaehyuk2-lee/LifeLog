@@ -13,6 +13,7 @@
     // log_name 목록과 데이터를 저장할 맵
     Map<String, double[]> logDataMap = new LinkedHashMap<>();
     Map<String, Double> goalAchievementMap = new LinkedHashMap<>();
+    
 
     try {
         // 데이터베이스 연결
@@ -155,7 +156,7 @@
         }
 
         .menu-bar {
-            flex: 0.187;
+            flex: 0.184;
             background-color: #274a8f;
             display: flex;
             flex-direction: column;
@@ -390,8 +391,8 @@
                 <img src="./image/Logo.png" alt="Logo" class="logo" />
                 <div class="logo-text">Life Log</div>
           </div>
-          <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
-          <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
+          <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
+          <div class="menu-item active" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
           <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
           <div class="menu-item" data-page="goal-management" onclick="location.href='goal_set.jsp'">목표 관리</div>
           <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
