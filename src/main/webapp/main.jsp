@@ -39,7 +39,7 @@
         
         .container {
         	display: flex;
-        	height: 100vh;
+        	
       	}
 
 		.menu-bar {
@@ -152,8 +152,8 @@
 <body>
 	<div class="container">
       <div class="menu-bar">
-      	<div class="logo-container">
-  			<img src="./image/Logo.png" alt="Logo" class="logo" />
+      	<div class="logo-container"  onclick="location.href='main.jsp'">
+  			<img src="./images/Logo.png" alt="Logo" class="logo" />
   			<div class="logo-text">Life Log</div>
 		</div>
         <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
@@ -165,9 +165,9 @@
 	
     <div class="calendar-container">
         <div class="calendar-header">
-            <a href="main.jsp?year=<%= year %>&month=<%= month - 1 %>">◀</a>
-            <span><%= year %>년 <%= month + 1 %>월</span>
-            <a href="main.jsp?year=<%= year %>&month=<%= month + 1 %>">▶</a>
+            <a href="main.jsp?year=<%= (month == 0 ? year - 1 : year) %>&month=<%= (month + 11) % 12 %>">◀</a>
+			<span><%= year %>년 <%= month + 1 %>월</span>
+			<a href="main.jsp?year=<%= (month == 11 ? year + 1 : year) %>&month=<%= (month + 1) % 12 %>">▶</a>
         </div>
 
         <jsp:include page="calendar.jsp">
@@ -175,11 +175,13 @@
             <jsp:param name="month" value="<%= month %>" />
         </jsp:include>
     </div>
-    
+    <%
+    String user_name = session.getAttribute("name").toString();
+    %>
     <div class="side">
-    	<div class="profile">
-            <div class="name">재혁리</div>
-    		<img src="./image/profile-icon.png" alt="User Icon" />
+    	<div class="profile" onclick="location.href='profile.jsp'">
+            <div class="name"><%=user_name%></div>
+    		<img src="./images/profile.png" alt="User Icon" />
         </div>
     	<div class="summary">주간 목표 달성률</div>
     </div>

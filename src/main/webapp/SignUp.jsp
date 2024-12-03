@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -166,6 +167,7 @@ pageEncoding="UTF-8"%>
       }
     </style>
     <script>
+    let isDuplicate = false;
       document.addEventListener("DOMContentLoaded", () => {
         const emailInput = document.getElementById("email");
         const passwordInput = document.getElementById("password");
@@ -198,6 +200,7 @@ pageEncoding="UTF-8"%>
           const email = emailInput.value.trim();
           const password = passwordInput.value.trim();
           const checkPassword = checkPasswordInput.value.trim();
+          
 
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             showError(emailInput, "Invalid email format.");
@@ -234,18 +237,18 @@ pageEncoding="UTF-8"%>
     </script>
   </head>
   <body>
-    <form action="SignUp_Success.jsp" method = "post">
+    <form action="SignUp_Check.jsp" method = "post">
       <div class="signup-container">
         <div class="signup-left slide-in-left">
           <h1>Sign up</h1>
 
           <div class="signup-form">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Email" required />
-
-            <label for="password">Password</label>
+            <label for="email">Email:</label>
+    		<input type="email" id="email" name="email" required>
+            <label for="password" >Password</label>
             <input
               type="password"
+              name = "pwd"
               id="password"
               placeholder="Password"
               required
@@ -274,28 +277,29 @@ pageEncoding="UTF-8"%>
           <div class="signup-form-right">
             <div class="form-group">
               <label for="name">이름</label>
-              <input type="text" id="name" placeholder="이름" required />
+              <input type="text" name = "name" id="name" placeholder="이름" required />
             </div>
             <div class="form-group">
               <label for="gender">성별</label>
-              <select id="gender" required>
-                <option value="">성별</option>
-                <option value="male">남성</option>
-                <option value="female">여성</option>
+              <select name ="gender" id="gender" required>
+                <option value="Other">성별</option>
+                <option value="MALE">남성</option>
+                <option value="FEMALE">여성</option>
               </select>
             </div>
             <div class="form-group">
               <label for="dob">생일</label>
-              <input type="date" id="dob" required />
+              <input type="date" name = "birth" id="dob" required />
             </div>
             <div class="form-group">
               <label for="job">직업</label>
-              <input type="text" id="job" placeholder="직업" required />
+              <input type="text" name = "job" id="job" placeholder="직업" required />
             </div>
             <div class="form-group">
               <label for="organization">소속</label>
               <input
                 type="text"
+                name = "org"
                 id="organization"
                 placeholder="소속"
                 required
@@ -305,7 +309,6 @@ pageEncoding="UTF-8"%>
             <button type="reset" class="reset">Reset</button>
           </div>
         </div>
-
         <div class="empty"></div>
       </div>
     </form>
