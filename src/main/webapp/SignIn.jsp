@@ -1,10 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 pageEncoding="UTF-8"%>
+<%
+    // 브라우저 캐싱 방지
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
+
 <!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet" href="" />
     <meta charset="UTF-8" />
+    <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
     <style type="text/css">
       body,
@@ -48,10 +56,14 @@ pageEncoding="UTF-8"%>
       .menu-item:hover .bar {
         width: 100%;
       }
+      .preview h1{
+      	position:absolute;
+      	top: 100px;
+      }
       .preview {
         flex: 2;
         color: white;
-        background-color: #1f305e;
+        background-color: #1e1e1e;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -62,8 +74,8 @@ pageEncoding="UTF-8"%>
       .preview img {
         margin-top: 100px;
         margin-bottom: 150px;
-        max-width: 100%;
-        max-height: 100%;
+        max-width: 500px;
+        max-height: 200px;
         opacity: 1;
         transition: opacity 0.5s ease-in-out;
       }
@@ -155,10 +167,10 @@ pageEncoding="UTF-8"%>
         const menuItems = document.querySelectorAll(".menu-item");
         const previewImage = document.querySelector(".preview img");
         const images = [
-          "./images/1.gif",
-          "./images/2.gif",
-          "./images/analysis.jpg",
-          "./images/4.gif",
+          "./images/set.png",
+          "./images/visualize.png",
+          "./images/analysis.png",
+          "./images/todo.png",
         ];
         let currentIndex = 0;
         let timer;
@@ -216,15 +228,13 @@ pageEncoding="UTF-8"%>
           <div class="bar"></div>
         </div>
         <div class="menu-item" id="summary">
-          <h3>Summary</h3>
+          <h3>To Do</h3>
           <div class="bar"></div>
         </div>
       </div>
-
+		
       <div class="preview slide-in-right1">
-        <div>
-          <h1>Preivew</h1>
-        </div>
+      <h1>Preivew</h1>
         <img src="./image/2.jpg" alt="" height="250px" />
       </div>
       <div class="login slide-in-right2">
@@ -244,9 +254,9 @@ pageEncoding="UTF-8"%>
             required
           />
 
-          <button type="submit" class="sign-in">Sign in</button>
+          <button type="submit" class="sign-in">로그인</button>
           <button class="sign-up" onclick="location.href='SignUp.jsp'">
-            Sign up
+           회원가입
           </button>
         </form>
       </div>

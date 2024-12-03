@@ -5,6 +5,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
     <style type="text/css">
         body, html {
