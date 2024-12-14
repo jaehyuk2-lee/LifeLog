@@ -36,6 +36,7 @@
         }
 
         table {
+        	min-width:700px;
             width: 100%;
             border-collapse: collapse;
             margin-top: 30px;

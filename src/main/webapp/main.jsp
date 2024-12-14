@@ -11,8 +11,7 @@
         response.sendRedirect("SignIn.jsp");
         return;
     }
-%>
-<%
+
     int year = 0;
     int month = 0;
 

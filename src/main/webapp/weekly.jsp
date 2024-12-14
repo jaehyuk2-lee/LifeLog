@@ -4,7 +4,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+ <link rel="icon" href="./images/Logo.png">
+ <title>Life Log</title>
 </head>
 <body>
 </body>
