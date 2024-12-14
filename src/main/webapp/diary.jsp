@@ -108,7 +108,7 @@
       padding: 10px;
       font-size: 14px;
       overflow-y: auto;
-      color: #black; /* 기본 텍스트 검정 */
+      color: #000000; /* 기본 텍스트 검정 */
       opacity: 0.7; /* 기본 텍스트 투명도 */
       cursor: pointer; /* 커서 스타일 추가 */
     }
