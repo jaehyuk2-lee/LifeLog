@@ -4,12 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>일기 추가</title>
+  <link rel="icon" href="./images/Logo.png">
+  <title>Life Log</title>
   <style>
     /* 기존 CSS 스타일 유지 */
     body {
       font-family: Arial, sans-serif;
-      background-color: black;
+      background-color: #1e1e1e;
       color: white;
       margin: 0;
       padding: 0;
@@ -150,7 +151,7 @@
 
     /* 메뉴 바 스타일 */
     .menu-bar {
-      width:220px;
+      width:200px;
       background-color: #274a8f;
       display: flex;
       flex-direction: column;
@@ -195,18 +196,26 @@
     .menu-item.active {
       background-color: #007bff;
     }
+    
+    
+    .place-bottom{
+      	bottom: 12px;
+      	width: 160px;
+     	position: absolute;
+     }
   </style>
 </head>
 <body>
   <div class="menu-bar">
     <div class="logo-container">
-      <img src="./image/Logo.png" alt="Logo" class="logo" />
+      <img src="./images/Logo.png" alt="Logo" class="logo" />
       <div class="logo-text">Life Log</div>
     </div>
     <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
     <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
     <div class="menu-item" data-page="log-record" onclick="location.href='goal_set.jsp'">로그 기록</div>
     <div class="menu-item active" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
+    <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
   </div>
 
   <!-- 상단 컨트롤 -->

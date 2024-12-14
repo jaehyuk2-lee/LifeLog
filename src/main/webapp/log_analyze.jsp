@@ -173,7 +173,7 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
         }
 
         .menu-bar {
-        	flex: 0.18;
+        	width:200px;
         	background-color: #274a8f;
         	display: flex;
         	flex-direction: column;
@@ -272,24 +272,39 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
             margin-bottom: 30px;
         }
 
-        .graph-container {
-            margin: 20px auto;
-            margin-top: 40px;
-            width: 90%;
-            text-align: center;
-        }
-
-        canvas {
-            display: block;
-            margin: 0 auto;
-        }
-
-
-        #achievementContainer {
-            display: flex;
-            flex-wrap: wrap; /* 한 줄에 두 개씩 정렬 */
-            justify-content: space-around;
-        }
+		/* 막대그래프 캔버스 */
+		.graph-container canvas {
+		    display: block;
+		    margin: 0 auto;
+		    width: 900px !important; /* 막대그래프 너비 고정 */
+		    height: 400px !important; /* 막대그래프 높이 고정 */
+		}
+		
+		/* 원그래프 컨테이너 */
+		#achievementContainer {
+		    display: grid; /* 그리드 레이아웃 사용 */
+		    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개의 그래프 */
+		    gap: 20px; /* 그래프 간 간격 */
+		    justify-items: center; /* 그래프를 중앙에 정렬 */
+		    padding: 20px; /* 컨테이너 내부 여백 */
+		}
+		
+		/* 원그래프 개별 컨테이너 */
+		#achievementContainer div {
+		    width: 300px; /* 원그래프 컨테이너 너비 */
+		    height: 350px; /* 제목 포함 높이 */
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: flex-start;
+		    box-sizing: border-box;
+		}
+		
+		/* 원그래프 캔버스 */
+		#achievementContainer canvas {
+		    width: 250px !important; /* 원그래프 너비 */
+		    height: 250px !important; /* 원그래프 높이 */
+		}
 
         .info-table {
             width: 70%; /* 테이블 전체 너비를 조정 */
@@ -352,6 +367,10 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
             'rgba(255, 159, 64, 1)',  // Saturday
             'rgba(199, 199, 199, 1)'  // Sunday
         ];
+
+            
+            
+
 
             if (chart) {
                 chart.destroy();
@@ -489,7 +508,7 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
           </div>
           <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
           <div class="menu-item active" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
-          <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+          <div class="menu-item" data-page="log-record" onclick="location.href='goal_set.jsp'">로그 기록</div>
           <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
           <div class="menu-item place-bottom" onclick="location.href='SignIn.jsp'">로그아웃</div>
         </div>

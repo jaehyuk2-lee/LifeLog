@@ -51,12 +51,12 @@
         }
         
         .container {
-        	display: flex;
+        	display:flex;
         	height:100vh;
       	}
 
 		.menu-bar {
-        	flex: 0.3;
+			width : 200px;
         	background-color: #274a8f;
         	display: flex;
         	flex-direction: column;
@@ -177,7 +177,7 @@
 		</div>
         <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
         <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
-        <div class="menu-item" data-page="log-record" onclick="location.href='log_set.jsp'">로그 기록</div>
+        <div class="menu-item" data-page="log-record" onclick="location.href='goal_set.jsp'">로그 기록</div>
         <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
         <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
       </div>
@@ -200,7 +200,10 @@
             <div class="name"><%=session.getAttribute("name").toString()%></div>
     		<img src="./images/profile-icon.png" alt="User Icon" />
         </div>
-    	<div class="summary">주간 목표 달성률</div>
+    	<div class="summary">
+    	<div>주간 달성률 분석</div>
+    	<jsp:include page="weekly.jsp"></jsp:include>
+    	</div>
     </div>
    </div>
 </body>
