@@ -192,7 +192,7 @@
         }
     } else {
         // 세션에 사용자 이메일이 없다면 로그인 페이지로 리다이렉션
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("SignIn.jsp");
     }
     %>
 
