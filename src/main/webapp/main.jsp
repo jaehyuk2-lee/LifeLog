@@ -45,8 +45,10 @@
             font-family: Arial, sans-serif;
             background-color: #1e1e1e;
             color: white;
-            margin: 0;
-            padding: 0;
+            display: flex;
+       	 	margin: 0;
+       	 	padding: 0;
+        	box-sizing: border-box;
         }
         
         .container {
@@ -109,12 +111,11 @@
 		}
 
         .calendar-container {
-        	flex:1;
-            width: 80%;
-            margin: 100px 30px;
+            flex:1;
+            margin: 100px 10px 10px;
             background-color: #274a8f;
-            padding: 20px;
             border-radius: 10px;
+           	height: 610px;
         }
 
         .calendar-header {
@@ -140,6 +141,9 @@
         }
 
         .profile {
+        	position:absolute;
+        	top:30px;
+        	right:50px;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -157,13 +161,24 @@
             font-size: 20px;
             font-weight: bold;
         }
-
+		
+		.side{
+			margin-top:50px;
+			padding:0px;
+		}
         .summary {
-            width: 100%;
             background-color: #274a8f;
             border-radius: 10px;
-            padding: 20px;
             text-align: center;
+            height:350px;
+        }
+        .diary{
+        	margin-top:10px;
+        	background-color: #274a8f;
+            border-radius: 10px;
+            text-align: center;
+            width:420px;
+            height:250px;
         }
     </style>
 </head>
@@ -180,9 +195,9 @@
         <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
         <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
       </div>
-	
-    <div class="calendar-container">
+    	<div class="calendar-container">
         <div class="calendar-header">
+        	<h3>캘린더</h3>
             <a href="main.jsp?year=<%= (month == 0 ? year - 1 : year) %>&month=<%= (month + 11) % 12 %>">◀</a>
 			<span><%= year %>년 <%= month + 1 %>월</span>
 			<a href="main.jsp?year=<%= (month == 11 ? year + 1 : year) %>&month=<%= (month + 1) % 12 %>">▶</a>
@@ -192,18 +207,23 @@
             <jsp:param name="year" value="<%= year %>" />
             <jsp:param name="month" value="<%= month %>" />
         </jsp:include>
-    </div>
-    
-    <div class="side">
-    	<div class="profile" onclick="location.href='profile.jsp'">
+    	</div>
+    	
+    	<div class="side">
+    		<div class="summary">
+    		<h3>주간 달성률 분석</h3>
+    		<jsp:include page="weekly.jsp"></jsp:include>
+    		</div>
+    		
+    		<div class="diary">
+    		<h3>일기</h3>
+    		<jsp:include page="weekly.jsp"></jsp:include>
+    		</div>
+    	</div>
+    	</div>
+   <div class="profile" onclick="location.href='profile.jsp'">
             <div class="name"><%=session.getAttribute("name").toString()%></div>
     		<img src="./images/profile-icon.png" alt="User Icon" />
-        </div>
-    	<div class="summary">
-    	<div>주간 달성률 분석</div>
-    	<jsp:include page="weekly.jsp"></jsp:include>
-    	</div>
-    </div>
-   </div>
+       	</div>
 </body>
 </html>

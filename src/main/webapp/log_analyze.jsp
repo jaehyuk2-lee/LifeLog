@@ -155,7 +155,8 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
 <!DOCTYPE html>
 <html>
 <head>
-    <title>로그 분석</title>
+    <link rel="icon" href="./images/Logo.png">
+    <title>Life Log</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -556,9 +557,6 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
                     <% } %>
                 </tbody>
             </table>
-            
-            
-            
         </div>
         
     </div>
