@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/plain; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*, javax.servlet.http.*, javax.servlet.*" %>
 <%
-    // 세션에서 email 가져오기
     HttpSession session = request.getSession(false);
     if (session == null || session.getAttribute("email") == null) {
         out.print("error|세션이 만료되었습니다. 다시 로그인해주세요.");
@@ -13,7 +12,6 @@
     String diaryContent = request.getParameter("diary_content");
     String dateWritten = request.getParameter("date_written");
 
-    // 입력 검증
     if (entryIdStr == null || entryIdStr.trim().isEmpty() ||
         diaryContent == null || diaryContent.trim().isEmpty() ||
         dateWritten == null || dateWritten.trim().isEmpty()) {
@@ -33,12 +31,10 @@
     PreparedStatement stmt = null;
 
     try {
-        // MySQL JDBC 드라이버 로드
         Class.forName("com.mysql.cj.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/life_log_db?serverTimezone=UTC";
         conn = DriverManager.getConnection(url, "lifelog_admin", "q1w2e3r4");
 
-        // 일기가 현재 사용자에게 속해있는지 확인
         String verifySql = "SELECT user_id FROM diaries WHERE entry_id = ?";
         stmt = conn.prepareStatement(verifySql);
         stmt.setInt(1, entryId);

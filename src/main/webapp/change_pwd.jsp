@@ -5,7 +5,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Lifelog</title>
+    <link rel="icon" href="./images/Logo.png">
+    <title>Life Log</title>
     <style>
         body {
             background-color: #1e1e1e;
@@ -112,17 +113,13 @@
         String userEmail = (String) session.getAttribute("email");
 
         if (userEmail == null) {
-            // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
             response.sendRedirect("SignIn.jsp");
             return;
         }
 
-        // 사용자 입력 데이터 가져오기
         String currentPassword = request.getParameter("current_password");
         String newPassword = request.getParameter("new_password");
         String confirmPassword = request.getParameter("confirm_password");
-
-        // 결과 메시지
         String message = "";
 
         if (currentPassword != null && newPassword != null && confirmPassword != null) {
@@ -134,7 +131,6 @@
                 ResultSet rs = null;
 
                 try {
-                    // 데이터베이스 연결 설정
                     String url = "jdbc:mysql://localhost:3306/life_log_db?useSSL=false&serverTimezone=UTC";
                     String dbUsername = "lifelog_admin";
                     String dbPassword = "q1w2e3r4";
@@ -142,7 +138,6 @@
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     conn = DriverManager.getConnection(url, dbUsername, dbPassword);
 
-                    // 현재 비밀번호 확인
                     String sql = "SELECT password FROM users WHERE id = ?";
                     pstmt = conn.prepareStatement(sql);
                     pstmt.setString(1, userEmail);
@@ -151,10 +146,9 @@
                     if (rs.next()) {
                         String dbPasswordHash = rs.getString("password");
 
-                        if (!currentPassword.equals(dbPasswordHash)) { // 비밀번호 확인
+                        if (!currentPassword.equals(dbPasswordHash)) {
                             message = "현재 비밀번호가 일치하지 않습니다.";
                         } else {
-                            // 비밀번호 업데이트
                             sql = "UPDATE users SET password = ? WHERE id = ?";
                             pstmt = conn.prepareStatement(sql);
                             pstmt.setString(1, newPassword);

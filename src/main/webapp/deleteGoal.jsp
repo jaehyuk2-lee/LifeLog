@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%
-    // 응답 설정
     response.setContentType("application/json");
     response.setCharacterEncoding("UTF-8");
 
@@ -19,12 +18,10 @@
             Connection conn = null;
             PreparedStatement pstmt = null;
             try {
-                // 데이터베이스 연결
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 String url = "jdbc:mysql://localhost:3306/life_log_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
                 conn = DriverManager.getConnection(url, "lifelog_admin", "q1w2e3r4");
 
-                // 삭제 SQL
                 String deleteSQL = "DELETE FROM logs WHERE log_id = ?";
                 pstmt = conn.prepareStatement(deleteSQL);
                 pstmt.setInt(1, logId);
@@ -51,7 +48,6 @@
         }
     }
 
-    // JSON 응답 생성 (문자열 직접 조합)
     String jsonResponse = "{\"status\":\"" + status + "\", \"message\":\"" + message + "\"}";
     out.print(jsonResponse);
 %>

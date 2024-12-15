@@ -3,7 +3,6 @@
 <%@ page import="javax.servlet.http.HttpSession" %>
 <%@ page import="javax.servlet.RequestDispatcher" %>
 <%
-    // 브라우저 캐싱 방지
     response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", 0);

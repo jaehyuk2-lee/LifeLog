@@ -69,7 +69,6 @@
     String day = request.getParameter("day");
     String email = session.getAttribute("email").toString();
 
-    // Handle POST request to add new task
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         String task = request.getParameter("task");
         Connection conn = null;
@@ -113,7 +112,6 @@
         }
     }
 
-    // Fetch tasks for the selected date
     Connection conn = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;

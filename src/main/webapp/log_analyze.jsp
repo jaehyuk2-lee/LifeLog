@@ -2,10 +2,9 @@
 <%@ page import="java.sql.*, java.util.*" %>
 <%@ page import="javax.servlet.http.*" %>
 <%
-// 세션에서 사용자 이메일 가져오기
-String userEmail = (String) session.getAttribute("email"); // 세션에서 이메일 값 가져오기
 
-// 데이터베이스 연결 정보
+String userEmail = (String) session.getAttribute("email"); 
+
 String dbUrl = "jdbc:mysql://localhost:3306/life_log_db?serverTimezone=UTC";
 String dbUser = "lifelog_admin";
 String dbPassword = "q1w2e3r4";
@@ -14,23 +13,19 @@ Connection conn = null;
 PreparedStatement pstmt = null;
 ResultSet rs = null;
 
-// log_name 목록, 단위 및 데이터를 저장할 맵
 Map<String, double[]> logDataMap = new LinkedHashMap<>();
 Map<String, String> unitMap = new LinkedHashMap<>();
 Map<String, Double> goalAchievementMap = new LinkedHashMap<>();
 
 try {
-    // 세션 이메일 확인
     if (userEmail == null) {
-        response.sendRedirect("login.jsp"); // 세션 정보가 없으면 로그인 페이지로 이동
+        response.sendRedirect("login.jsp");
         return;
     }
 
-    // 데이터베이스 연결
     Class.forName("com.mysql.cj.jdbc.Driver");
     conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 
-    // 특정 사용자의 log_name 목록 및 단위 가져오기
     String logNameQuery = "SELECT DISTINCT log_name, unit FROM logs WHERE user_id = ?";
     pstmt = conn.prepareStatement(logNameQuery);
     pstmt.setString(1, userEmail);
@@ -39,15 +34,14 @@ try {
     while (rs.next()) {
         String logName = rs.getString("log_name");
         logNames.add(logName);
-        unitMap.put(logName, rs.getString("unit")); // 단위 저장
+        unitMap.put(logName, rs.getString("unit"));
     }
     rs.close();
     pstmt.close();
 
-    // 요일별 데이터 및 달성률 계산
     for (String logName : logNames) {
         double[] weeklyData = new double[7];
-        Arrays.fill(weeklyData, 0.0); // 기본값 0으로 초기화
+        Arrays.fill(weeklyData, 0.0);
         double totalInput = 0.0;
         int activeDays = 0;
         double goalValue = 0.0;
@@ -80,7 +74,7 @@ try {
             String day = rs.getString("day_of_week");
             double dayTotalInput = rs.getDouble("total_input");
             int dayActiveDays = rs.getInt("active_days");
-            goalValue = rs.getDouble("goal_value"); // 동일 log_name이므로 goal_value는 동일
+            goalValue = rs.getDouble("goal_value");
 
             totalInput += dayTotalInput;
             activeDays += dayActiveDays;
@@ -91,7 +85,6 @@ try {
             }
         }
 
-        // 달성률 계산: (totalInput / (activeDays * goalValue)) * 100
         if (activeDays > 0 && goalValue > 0) {
             double achievementRate = (totalInput / (activeDays * goalValue)) * 100;
             goalAchievementMap.put(logName, achievementRate);
@@ -109,7 +102,6 @@ try {
     if (conn != null) conn.close();
 }
 
-// JSON 데이터를 생성
 StringBuilder graphDataJsonBuilder = new StringBuilder();
 graphDataJsonBuilder.append("{");
 int logIndex = 0;
@@ -144,11 +136,10 @@ for (Map.Entry<String, Double> entry : goalAchievementMap.entrySet()) {
 goalAchievementJsonBuilder.append("}");
 String goalAchievementJson = goalAchievementJsonBuilder.toString();
 
-// JSP로 데이터 전달
 request.setAttribute("graphData", graphDataJson);
 request.setAttribute("goalAchievementData", goalAchievementJson);
 request.setAttribute("logNames", logDataMap.keySet());
-request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
+request.setAttribute("unitMap", unitMap);
 %>
 
 
@@ -209,26 +200,26 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
       	}
 
           select {
-            width: 150px; /* 선택 창 너비 */
-            height: 40px; /* 선택 창 높이 */
-            background-color: #063a71; /* 선택 창 배경색 */
-            color: white; /* 선택 창 글자 색상 */
-            border: none; /* 테두리 제거 */
-            border-radius: 5px; /* 모서리를 둥글게 */
-            padding: 5px 10px; /* 내부 여백 */
-            font-size: 16px; /* 글자 크기 */
-            outline: none; /* 포커스 시 외곽선 제거 */
-            cursor: pointer; /* 커서를 포인터로 변경 */
+            width: 150px;
+            height: 40px;
+            background-color: #063a71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 16px;
+            outline: none;
+            cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         select:hover {
-            background-color: #0056b3; /* 마우스 오버 시 배경색 */
+            background-color: #0056b3;
         }
 
         option {
-            font-size: 16px; /* 옵션 글자 크기 */
-            padding: 10px; /* 옵션 내부 여백 */
+            font-size: 16px;
+            padding: 10px;
         }
 
         .logo-container {
@@ -273,27 +264,24 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
             margin-bottom: 30px;
         }
 
-		/* 막대그래프 캔버스 */
 		.graph-container canvas {
 		    display: block;
 		    margin: 0 auto;
-		    width: 900px !important; /* 막대그래프 너비 고정 */
-		    height: 400px !important; /* 막대그래프 높이 고정 */
+		    width: 900px !important;
+		    height: 400px !important;
 		}
 		
-		/* 원그래프 컨테이너 */
 		#achievementContainer {
-		    display: grid; /* 그리드 레이아웃 사용 */
-		    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개의 그래프 */
-		    gap: 20px; /* 그래프 간 간격 */
-		    justify-items: center; /* 그래프를 중앙에 정렬 */
-		    padding: 20px; /* 컨테이너 내부 여백 */
+		    display: grid;
+		    grid-template-columns: repeat(2, 1fr);
+		    gap: 20px;
+		    justify-items: center;
+		    padding: 20px;
 		}
 		
-		/* 원그래프 개별 컨테이너 */
 		#achievementContainer div {
-		    width: 300px; /* 원그래프 컨테이너 너비 */
-		    height: 350px; /* 제목 포함 높이 */
+		    width: 300px;
+		    height: 350px;
 		    display: flex;
 		    flex-direction: column;
 		    align-items: center;
@@ -301,35 +289,34 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
 		    box-sizing: border-box;
 		}
 		
-		/* 원그래프 캔버스 */
 		#achievementContainer canvas {
-		    width: 250px !important; /* 원그래프 너비 */
-		    height: 250px !important; /* 원그래프 높이 */
+		    width: 250px !important;
+		    height: 250px !important;
 		}
 
         .info-table {
-            width: 70%; /* 테이블 전체 너비를 조정 */
-            margin: 10px auto; /* 중앙 정렬 */
-            border-collapse: collapse; /* 테두리 간격 제거 */
+            width: 70%;
+            margin: 10px auto;
+            border-collapse: collapse;
         }
 
         .info-table tr {
-            border-bottom: 1px solid #444; /* 하단 경계선 */
+            border-bottom: 1px solid #444;
         }
 
         .info-table th, .info-table td {
             padding: 15px 10px;
-            text-align: left; /* 텍스트를 가운데 정렬 */
+            text-align: left;
             color: white;
         }
 
         .info-table th {
             font-weight: bold;
-            text-align: left; /* 헤더 가운데 정렬 */
+            text-align: left;
         }
 
         .info-table td:first-child {
-            text-align: left; /* 첫 번째 열은 왼쪽 정렬 */
+            text-align: left;
         }
 
     </style>
@@ -337,41 +324,35 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
     <script>
         let chart;
 
-        // 전체 데이터
         const graphData = JSON.parse('<%= request.getAttribute("graphData") %>');
         const goalAchievementData = JSON.parse('<%= request.getAttribute("goalAchievementData") %>');
 
         console.log("goalAchievementData:", goalAchievementData);
 
-        // 그래프 그리기
+
         function drawGraph(logName) {
             const data = graphData[logName];
             const ctx = document.getElementById('graphCanvas').getContext('2d');
 
-                    // 막대그래프 색상 배열 생성
-        const colors = [
-            'rgba(255, 99, 132, 0.7)',  // Monday
-            'rgba(54, 162, 235, 0.7)', // Tuesday
-            'rgba(255, 206, 86, 0.7)', // Wednesday
-            'rgba(75, 192, 192, 0.7)', // Thursday
-            'rgba(153, 102, 255, 0.7)', // Friday
-            'rgba(255, 159, 64, 0.7)',  // Saturday
-            'rgba(199, 199, 199, 0.7)'  // Sunday
-        ];
+        	const colors = [
+            	'rgba(255, 99, 132, 0.7)',
+            	'rgba(54, 162, 235, 0.7)',
+            	'rgba(255, 206, 86, 0.7)',
+            	'rgba(75, 192, 192, 0.7)',
+            	'rgba(153, 102, 255, 0.7)',
+            	'rgba(255, 159, 64, 0.7)',
+            	'rgba(199, 199, 199, 0.7)'
+       		];
 
-        const borderColors = [
-            'rgba(255, 99, 132, 1)',  // Monday
-            'rgba(54, 162, 235, 1)', // Tuesday
-            'rgba(255, 206, 86, 1)', // Wednesday
-            'rgba(75, 192, 192, 1)', // Thursday
-            'rgba(153, 102, 255, 1)', // Friday
-            'rgba(255, 159, 64, 1)',  // Saturday
-            'rgba(199, 199, 199, 1)'  // Sunday
-        ];
-
-            
-            
-
+        	const borderColors = [
+            	'rgba(255, 99, 132, 1)',
+            	'rgba(54, 162, 235, 1)',
+            	'rgba(255, 206, 86, 1)',
+            	'rgba(75, 192, 192, 1)',
+            	'rgba(153, 102, 255, 1)',
+            	'rgba(255, 159, 64, 1)',
+            	'rgba(199, 199, 199, 1)'
+        	];
 
             if (chart) {
                 chart.destroy();
@@ -414,33 +395,29 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
 
         function createPieChartWithTitle(logName, index) {
             const container = document.createElement('div');
-            console.log("createPieChartWithTitle logName:", logName); // 디버깅 추가
+            console.log("createPieChartWithTitle logName:", logName);
             
-            container.style.width = '48%'; // 한 줄에 두 개씩 정렬
-            container.style.margin = '1%'; // 그래프 간 간격
+            container.style.width = '48%';
+            container.style.margin = '1%';
             container.style.textAlign = 'center';
-            container.style.display = 'inline-block'; // Flex 정렬에 포함되도록 설정
+            container.style.display = 'inline-block';
 
-            // 제목 추가
             const title = document.createElement('h3');
             title.textContent = logName
             title.style.color = 'white';
             title.style.marginBottom = '10px';
             container.appendChild(title);
 
-            // 캔버스 추가
             const canvasId = `achievementCanvas${index}`;
             const canvasElement = document.createElement('canvas');
             canvasElement.id = canvasId;
-            canvasElement.width = 300; // 그래프 크기 축소
+            canvasElement.width = 300;
             canvasElement.height = 300;
             container.appendChild(canvasElement);
 
-            // 컨테이너에 추가
             const achievementContainer = document.getElementById('achievementContainer');
             achievementContainer.appendChild(container);
 
-            // 그래프 생성
             const ctx = canvasElement.getContext('2d');
             new Chart(ctx, {
                 type: 'pie',
@@ -480,7 +457,6 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
             });
         }
 
-        // 페이지 로드 시 실행
         window.onload = function () {
             const logSelector = document.getElementById('logSelector');
             drawGraph(logSelector.value);
@@ -488,11 +464,8 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
                 drawGraph(this.value);
             });
 
-            
-
-            // 원그래프 생성
             const achievementContainer = document.getElementById('achievementContainer');
-            achievementContainer.innerHTML = ''; // 기존 그래프 초기화
+            achievementContainer.innerHTML = '';
             Object.keys(goalAchievementData).forEach((logName, index) => {
                 createPieChartWithTitle(logName, index);
             });
@@ -532,7 +505,6 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
             <h1 class="section2">주간 달성률 분석</h1>
             <hr>
             <div id="achievementContainer" class="graph-container">
-                <!-- 개별 원그래프가 동적으로 추가됩니다. -->
             </div>
             <h1 class="section2">주간 로그 통계</h1>
             <hr>
@@ -547,8 +519,8 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
                     <% 
                         for (String logName : logDataMap.keySet()) {
                             double[] weeklyData = logDataMap.get(logName);
-                            double total = Arrays.stream(weeklyData).sum(); // 총합 계산
-                            String unit = unitMap.get(logName); // 해당 log_name의 단위 가져오기
+                            double total = Arrays.stream(weeklyData).sum();
+                            String unit = unitMap.get(logName);
                     %>
                     <tr>
                         <td><%= logName %></td>

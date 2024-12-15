@@ -155,9 +155,8 @@
 <body>
     <%
 
-    String userEmail = (String) session.getAttribute("email"); // 세션에서 이메일 값 가져오기
+    String userEmail = (String) session.getAttribute("email");
 
-    // 데이터베이스 연결 설정
     String url = "jdbc:mysql://localhost:3306/life_log_db?serverTimezone=UTC";
     String username = "lifelog_admin";
     String password = "q1w2e3r4";
@@ -165,19 +164,16 @@
     PreparedStatement pstmt = null;
     ResultSet rs = null;
 
-    // 사용자 데이터 초기화
     String name = "", id = "", gender = "",  birthday = "", job = "", org = "";
 
-    if (userEmail != null) { // 로그인된 사용자가 있을 경우
+    if (userEmail != null) {
         try {
-            // 데이터베이스 연결
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, username, password);
 
-            // 사용자 데이터를 조회 (세션에서 받은 userEmail로 데이터 조회)
             String sql = "SELECT * FROM users WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, userEmail); // 세션에서 가져온 사용자 이메일을 사용
+            pstmt.setString(1, userEmail);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -196,13 +192,11 @@
             if (conn != null) try { conn.close(); } catch (SQLException e) {}
         }
     } else {
-        // 세션에 사용자 이메일이 없다면 로그인 페이지로 리다이렉션
         response.sendRedirect("SignIn.jsp");
     }
     %>
 
     <div class="container">
-        <!-- 메뉴바 -->
         <div class="menu-bar">
             <div class="logo-container">
                 <img src="./images/Logo.png" alt="Logo" class="logo" />
@@ -215,7 +209,6 @@
             <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
         </div>
 
-        <!-- 콘텐츠 -->
         <div class="content">
             <div class="header">
                 <img src="<%= request.getContextPath() %>/images/profile-icon.png" alt="Profile Icon">

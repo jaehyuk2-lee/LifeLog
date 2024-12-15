@@ -3,10 +3,8 @@
 <%@ page import="java.util.*" %>
 <%@ page import="javax.servlet.http.*" %>
 <%
-// 세션에서 사용자 이메일 가져오기
-String userEmail = (String) session.getAttribute("email"); // 세션에서 이메일 값 가져오기
+String userEmail = (String) session.getAttribute("email");
 
-// 데이터베이스 연결 정보
 String dbUrl = "jdbc:mysql://localhost:3306/life_log_db?serverTimezone=UTC";
 String dbUser = "lifelog_admin";
 String dbPassword = "q1w2e3r4";
@@ -15,23 +13,19 @@ Connection conn = null;
 PreparedStatement pstmt = null;
 ResultSet rs = null;
 
-// log_name 목록, 단위 및 데이터를 저장할 맵
 Map<String, double[]> logDataMap = new LinkedHashMap<>();
 Map<String, String> unitMap = new LinkedHashMap<>();
 Map<String, Double> goalAchievementMap = new LinkedHashMap<>();
 
 try {
-    // 세션 이메일 확인
     if (userEmail == null) {
-        response.sendRedirect("login.jsp"); // 세션 정보가 없으면 로그인 페이지로 이동
+        response.sendRedirect("login.jsp");
         return;
     }
 
-    // 데이터베이스 연결
     Class.forName("com.mysql.cj.jdbc.Driver");
     conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 
-    // 특정 사용자의 log_name 목록 및 단위 가져오기
     String logNameQuery = "SELECT DISTINCT log_name, unit FROM logs WHERE user_id = ?";
     pstmt = conn.prepareStatement(logNameQuery);
     pstmt.setString(1, userEmail);
@@ -40,15 +34,14 @@ try {
     while (rs.next()) {
         String logName = rs.getString("log_name");
         logNames.add(logName);
-        unitMap.put(logName, rs.getString("unit")); // 단위 저장
+        unitMap.put(logName, rs.getString("unit"));
     }
     rs.close();
     pstmt.close();
 
-    // 요일별 데이터 및 달성률 계산
     for (String logName : logNames) {
         double[] weeklyData = new double[7];
-        Arrays.fill(weeklyData, 0.0); // 기본값 0으로 초기화
+        Arrays.fill(weeklyData, 0.0);
         double totalInput = 0.0;
         int activeDays = 0;
         double goalValue = 0.0;
@@ -81,7 +74,7 @@ try {
             String day = rs.getString("day_of_week");
             double dayTotalInput = rs.getDouble("total_input");
             int dayActiveDays = rs.getInt("active_days");
-            goalValue = rs.getDouble("goal_value"); // 동일 log_name이므로 goal_value는 동일
+            goalValue = rs.getDouble("goal_value");
 
             totalInput += dayTotalInput;
             activeDays += dayActiveDays;
@@ -92,7 +85,6 @@ try {
             }
         }
 
-        // 달성률 계산: (totalInput / (activeDays * goalValue)) * 100
         if (activeDays > 0 && goalValue > 0) {
             double achievementRate = (totalInput / (activeDays * goalValue)) * 100;
             goalAchievementMap.put(logName, achievementRate);
@@ -145,11 +137,10 @@ for (Map.Entry<String, Double> entry : goalAchievementMap.entrySet()) {
 goalAchievementJsonBuilder.append("}");
 String goalAchievementJson = goalAchievementJsonBuilder.toString();
 
-// JSP로 데이터 전달
 request.setAttribute("graphData", graphDataJson);
 request.setAttribute("goalAchievementData", goalAchievementJson);
 request.setAttribute("logNames", logDataMap.keySet());
-request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
+request.setAttribute("unitMap", unitMap);
 %>
 
 <!DOCTYPE html>
@@ -177,10 +168,8 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
     <div id="achievementContainer"></div>
 
     <script>
-        // 전달된 데이터 가져오기
         const goalAchievementData = JSON.parse('<%= request.getAttribute("goalAchievementData") %>');
         
-        // 원그래프 생성 함수
         function createPieChart(logName, achievementRate) {
             const container = document.createElement('div');
             const canvas = document.createElement('canvas');
@@ -221,7 +210,6 @@ request.setAttribute("unitMap", unitMap); // 단위 데이터 전달
             achievementContainer.appendChild(container);
         }
 
-        // 데이터로 그래프 생성
         Object.entries(goalAchievementData).forEach(([logName, achievementRate]) => {
             createPieChart(logName, parseFloat(achievementRate));
         });

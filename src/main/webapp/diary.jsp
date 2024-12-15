@@ -7,7 +7,6 @@
   <link rel="icon" href="./images/Logo.png">
   <title>Life Log</title>
   <style>
-    /* 기존 CSS 스타일 유지 */
     body {
       font-family: Arial, sans-serif;
       background-color: #1e1e1e;
@@ -18,9 +17,8 @@
       height: 100vh;
     }
 
-    /* 상단 컨트롤 스타일 */
     .controls {
-      text-align: left; /* 왼쪽 정렬 */
+      text-align: left;
       padding: 20px;
       border-bottom: 2px solid #2D488B;
     }
@@ -39,26 +37,24 @@
     }
 
     .content-container {
-      flex: 1; /* 남은 모든 공간을 차지하도록 설정 */
+      flex: 1;
       display: flex;
       flex-direction: column;
-      overflow-y: auto; /* 스크롤 가능 */
+      overflow-y: auto;
     }
 
-    /* 컨테이너 스타일 */
     .container {
       display: flex;
       flex-wrap: wrap;
-      row-gap: 50px; /* 카드 위아래 간격 */
-      column-gap: 30px; /* 카드 좌우 간격 */
+      row-gap: 50px;
+      column-gap: 30px;
       padding: 20px;
       justify-content: flex-start;
     }
 
-    /* 다이어리 박스 스타일 */
     .diary-box {
-      width: 250px; /* 카드 너비 */
-      height: 250px; /* 카드 높이 */
+      width: 250px;
+      height: 250px;
       background-color: white;
       color: black;
       border: 1px solid #ccc;
@@ -109,15 +105,15 @@
       padding: 10px;
       font-size: 14px;
       overflow-y: auto;
-      color: #000000; /* 기본 텍스트 검정 */
-      opacity: 0.7; /* 기본 텍스트 투명도 */
-      cursor: pointer; /* 커서 스타일 추가 */
+      color: #000000;
+      opacity: 0.7;
+      cursor: pointer;
     }
 
     .diary-box .content.active {
-      color: black; /* 입력 후 글자 색 */
-      opacity: 1; /* 입력 후 투명도 제거 */
-      cursor: text; /* 수정 시 텍스트 커서 */
+      color: black;
+      opacity: 1;
+      cursor: text;
     }
 
     .diary-box .delete-button {
@@ -125,7 +121,7 @@
       bottom: 10px;
       right: 10px;
       background-color: transparent;
-      color: rgba(0, 0, 0, 0.5); /* 불투명한 회색 */
+      color: rgba(0, 0, 0, 0.5);
       font-size: 20px;
       font-weight: bold;
       border: none;
@@ -133,10 +129,9 @@
     }
 
     .diary-box .delete-button:hover {
-      color: rgba(0, 0, 0, 0.8); /* 삭제 버튼 호버 시 색 변경 */
+      color: rgba(0, 0, 0, 0.8);
     }
 
-    /* 달력 입력 필드 위치 조정 */
     header input[type="date"] {
       position: absolute;
       top: 50%;
@@ -149,7 +144,6 @@
       padding: 5px;
     }
 
-    /* 메뉴 바 스타일 */
     .menu-bar {
       width:200px;
       background-color: #274a8f;
@@ -218,15 +212,12 @@
     <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
   </div>
 
-  <!-- 상단 컨트롤 -->
   <div class="content-container">
     <div class="controls">
       <button id="addDiaryButton">+ 일기 추가</button>
     </div>
 
-    <!-- 다이어리 박스 컨테이너 -->
     <div class="container" id="diaryContainer">
-      <!-- 기본 다이어리 박스는 초기 로드 시 비워둡니다 -->
     </div>
   </div>
 
@@ -234,18 +225,15 @@
     const diaryContainer = document.getElementById('diaryContainer');
     const addDiaryButton = document.getElementById('addDiaryButton');
 
-    // Add a new diary box
     addDiaryButton.addEventListener('click', () => {
       const diaryBox = createDiaryBox();
       diaryContainer.appendChild(diaryBox);
 
-      // 애니메이션을 위해 다음 프레임에 .show 클래스 추가
       setTimeout(() => {
         diaryBox.classList.add('show');
       }, 10);
     });
 
-    // Function to create a diary box
     function createDiaryBox(entry = {}) {
       const diaryBox = document.createElement('div');
       diaryBox.className = 'diary-box';
@@ -276,10 +264,8 @@
       diaryBox.appendChild(content);
       diaryBox.appendChild(deleteButton);
 
-      // Add calendar functionality
       addCalendarFunctionality(dateLabel, dateIcon, diaryBox);
 
-      // Handle content click for editing
       content.addEventListener('click', () => {
         content.contentEditable = true;
         content.focus();
@@ -289,7 +275,6 @@
         }
       });
 
-      // Save content on Enter
       content.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -297,18 +282,15 @@
         }
       });
 
-      // Save content on blur
       content.addEventListener('blur', () => {
         saveDiary(diaryBox);
       });
 
-      // Delete diary box
       deleteButton.addEventListener('click', () => {
         const entryId = diaryBox.getAttribute('data-entry-id');
         if (entryId) {
           deleteDiary(entryId, diaryBox);
         } else {
-          // If entry_id가 없으면 단순히 UI에서 제거
           diaryBox.classList.add('hide');
           setTimeout(() => {
             diaryContainer.removeChild(diaryBox);
@@ -319,13 +301,11 @@
       return diaryBox;
     }
 
-    // Add calendar functionality to the header
     function addCalendarFunctionality(dateLabel, dateIcon, diaryBox) {
       dateIcon.addEventListener('click', () => {
         const existingInput = dateLabel.querySelector('input[type="date"]');
         if (existingInput) {
           dateLabel.removeChild(existingInput);
-          // Reset 날짜가 선택되지 않은 경우
           if (!diaryBox.getAttribute('data-entry-id')) {
             dateLabel.textContent = '날짜 선택';
           }
@@ -341,19 +321,17 @@
           }
         });
 
-        dateLabel.textContent = ''; // Clear existing text
+        dateLabel.textContent = '';
         dateLabel.appendChild(dateInput);
         dateInput.focus();
       });
     }
 
-    // Function to save diary (add or update)
     function saveDiary(diaryBox) {
       const entryId = diaryBox.getAttribute('data-entry-id');
       const content = diaryBox.querySelector('.content').textContent.trim();
       const dateWritten = diaryBox.querySelector('.date-label').textContent.trim();
 
-      // Validation
       if (!dateWritten || dateWritten === '날짜 선택') {
         alert('날짜를 선택해주세요.');
         return;
@@ -381,7 +359,6 @@
       .then(result => {
         if (result.status === 'success') {
           if (!entryId) {
-            // 새로운 일기인 경우 entry_id를 설정
             diaryBox.setAttribute('data-entry-id', result.entry_id);
           }
           alert(result.message);
@@ -402,7 +379,6 @@
       });
     }
 
-    // Function to delete diary
     function deleteDiary(entryId, diaryBox) {
       if (!confirm('정말로 이 일기를 삭제하시겠습니까?')) {
         return;
@@ -435,7 +411,6 @@
       });
     }
 
- // Function to load existing diaries
     function loadDiaries() {
       console.log('Loading diaries...');
       fetch('loadDiaries.jsp', {
@@ -458,7 +433,6 @@
             const diaryBox = createDiaryBox(diary);
             diaryContainer.appendChild(diaryBox);
 
-            // 애니메이션을 위해 다음 프레임에 .show 클래스 추가
             setTimeout(() => {
               diaryBox.classList.add('show');
             }, 10);
@@ -476,7 +450,6 @@
       });
     }
 
-    // 페이지 로드 시 기존 일기 로드
     window.addEventListener('DOMContentLoaded', loadDiaries);
   </script>
 </body>
