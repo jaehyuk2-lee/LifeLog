@@ -204,6 +204,7 @@
 			padding:0px;
 		}
         .summary {
+        	width:420px;
             background-color: #274a8f;
             border-radius: 10px;
             text-align: center;

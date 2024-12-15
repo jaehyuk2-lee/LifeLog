@@ -133,7 +133,7 @@ pageEncoding="UTF-8"%>
         filter: invert(1);
         cursor: pointer;
       }
-
+      
       button {
         padding: 10px;
         border: none;
@@ -283,9 +283,9 @@ pageEncoding="UTF-8"%>
             <div class="form-group">
               <label for="gender">성별</label>
               <select name ="gender" id="gender" required>
-                <option value="Other">성별</option>
-                <option value="MALE">남성</option>
-                <option value="FEMALE">여성</option>
+                <option style="color:black;" value="Other">성별</option>
+                <option style="color:black;" value="MALE">남성</option>
+                <option style="color:black;" value="FEMALE">여성</option>
               </select>
             </div>
             <div class="form-group">
