@@ -38,6 +38,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="./images/Logo.png">
     <title>Life Log</title>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchDiaries();
+
+        function fetchDiaries() {
+            fetch('loadDiaries.jsp')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        renderDiaries(data.diaries);
+                    } else {
+                        console.error("Failed to fetch diaries:", data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching diaries:", error);
+                });
+        }
+
+        function renderDiaries(diaries) {
+            const diaryContainer = document.getElementById("diaryEntries");
+            if (!diaries || diaries.length === 0) {
+                diaryContainer.innerHTML = "<p>작성된 일기가 없습니다.</p>";
+                return;
+            }
+            diaryContainer.innerHTML = "";
+            diaries.forEach(diary => {
+            	var content = diary.diary_content;
+            	var date = diary.date_written;
+                const diaryElement = document.createElement("div");
+                diaryElement.className = "diary-entry";
+                diaryElement.innerHTML =
+                    '<div class="diary-entry-date">' + date + '</div>' +
+                    '<div class="diary-entry-content">' + content + '</div>';
+                diaryContainer.appendChild(diaryElement);
+            });
+        }
+    });
+</script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -178,6 +217,29 @@
             width:420px;
             height:250px;
         }
+        .diary-entries-container {
+        	display: flex;
+        	gap: 10px;
+        	overflow-x: auto;
+        	padding: 10px;
+    	}
+
+    	.diary-entry {
+    		color: black;
+        	background-color: white;
+        	border: 1px solid #007bff;
+        	border-radius: 8px;
+        	padding: 10px;
+        	width: 200px;
+        	height: 100px;
+        	flex-shrink: 0;
+        	word-wrap: break-word;
+    	}
+
+    	.diary-entry-date {
+        	font-weight: bold;
+        	margin-bottom: 8px;
+    	}
     </style>
 </head>
 <body>
@@ -214,14 +276,17 @@
     		</div>
     		
     		<div class="diary">
-    		<h3>일기</h3>
-    		<jsp:include page="weekly.jsp"></jsp:include>
-    		</div>
+    			<h3>일기</h3>
+    			<div id="diaryEntries" class="diary-entries-container">
+    			</div>
+			</div>
+
     	</div>
     	</div>
    <div class="profile" onclick="location.href='profile.jsp'">
             <div class="name"><%=session.getAttribute("name").toString()%></div>
     		<img src="./images/profile-icon.png" alt="User Icon" />
        	</div>
+
 </body>
 </html>
