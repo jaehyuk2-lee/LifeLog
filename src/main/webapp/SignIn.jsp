@@ -233,7 +233,7 @@ pageEncoding="UTF-8"%>
       </div>
 		
       <div class="preview slide-in-right1">
-      <h1>Preivew</h1>
+      <h1>Preview</h1>
         <img src="./image/2.jpg" alt="" height="250px" />
       </div>
       <div class="login slide-in-right2">

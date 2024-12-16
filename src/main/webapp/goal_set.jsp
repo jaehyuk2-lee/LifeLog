@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*, java.util.*" %>
+<%@ page import="java.sql.*, java.util.*, java.math.BigDecimal" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -20,9 +20,11 @@
         }
 
         .container {
-            margin-left : 60px;
-            margin-top : 21.44px;
-            content-align : center; 
+            margin: 10px auto;
+            width: 90%;
+            max-width: 1000px;
+            flex: 1;
+            overflow-y: auto;
         }
 
         h1 {
@@ -35,7 +37,6 @@
         }
 
         table {
-        	min-width:700px;
             width: 100%;
             border-collapse: collapse;
             margin-top: 30px;
@@ -96,21 +97,16 @@
             font-weight: bold;
             font-size: 18px;
         }
-		
-		.page-container{
-			display:flex;
-        	height:100vh;
-		}
-		
+
         .menu-bar {
-      		width:200px;
-      		background-color: #274a8f;
-      		display: flex;
-      		flex-direction: column;
-      		align-items: center;
-      		padding: 20px 10px;
-      		gap: 20px;
-    	}
+            width:200px;
+            background-color: #274a8f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            gap: 20px;
+        }
 
         .menu-item {
             display: flex;
@@ -130,13 +126,7 @@
         .menu-item.active {
             background-color: #007bff;
         }
-        
-        .place-bottom{
-      		bottom: 12px;
-      		width: 160px;
-      		position: absolute;
-      	}
-      	
+
         .logo-container {
             display: flex;
             align-items: center;
@@ -156,23 +146,23 @@
         }
 
         .goal-input {
-          margin-top: 5px;
-          width: 90%;
-          padding: 8px;
-          background-color: #000;
-          color: #fff;
-          border: 1px solid #444;
-          text-align: center;
-          display: inline-block;
-      }
+            margin-top: 5px;
+            width: 90%;
+            padding: 8px;
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #444;
+            text-align: center;
+            display: inline-block;
+        }
 
-      .goal-input[disabled] {
-          display: none;
-      }
+        .goal-input[disabled] {
+            display: none;
+        }
     </style>
 </head>
 <body>
-	<div class="page-container">
+
     <div class="menu-bar">
         <div class="logo-container">
             <img src="./images/Logo.png" alt="Logo" class="logo" />
@@ -182,11 +172,10 @@
         <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
         <div class="menu-item active" data-page="log-record" onclick="location.href='goal_set.jsp'">로그 기록</div>
         <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
-        <div class="menu-item place-bottom" onclick="location.href='SignOut.jsp'">로그아웃</div>
     </div>
     
     <div class="container">
-        <h1>로그 기록</h1>
+        <h1>목표관리</h1>
         <table id="goalTable">
             <thead>
                 <tr>
@@ -198,7 +187,6 @@
                 </tr>
             </thead>
             <tbody>
-            	
             </tbody>
         </table>
         <div class="button-container">
@@ -206,7 +194,7 @@
             <button id="saveChanges">수정완료</button>
         </div>
     </div>
-   </div>
+    
     <%! 
     public String escapeJson(String str) {
         if (str == null) {
@@ -238,8 +226,8 @@
         }
         return sb.toString();
     }
-%>
-
+    %>
+    
 <%
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -258,9 +246,24 @@
 
         String userEmail = (String) session.getAttribute("email");
 
-        String selectSQL = "SELECT log_id, log_name, input_value, unit, is_goal, goal_value FROM logs WHERE user_id = ?";
+        java.util.Date today = new java.util.Date();
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = sdf.format(today);
+
+        String selectSQL = "SELECT l.log_id, l.log_name, l.input_value, l.unit, l.is_goal, l.goal_value " +
+                           "FROM logs l " +
+                           "INNER JOIN ( " +
+                           "    SELECT log_name, MAX(log_id) AS max_log_id " +
+                           "    FROM logs " +
+                           "    WHERE user_id = ? AND DATE(date_entered) = ? " +
+                           "    GROUP BY log_name " +
+                           ") lm ON l.log_name = lm.log_name AND l.log_id = lm.max_log_id " +
+                           "WHERE l.user_id = ? AND DATE(l.date_entered) = ?";
         pstmt = conn.prepareStatement(selectSQL);
         pstmt.setString(1, userEmail);
+        pstmt.setString(2, currentDate);
+        pstmt.setString(3, userEmail);
+        pstmt.setString(4, currentDate);
         rs = pstmt.executeQuery();
 
         List<Map<String, Object>> goals = new ArrayList<>();
@@ -548,7 +551,7 @@
                                 alert(response.message || "데이터가 성공적으로 저장되었습니다.");
                                 location.reload();
                             } else {
-                                alert("목표 저장에 실패했습니다: " + (response.message || "알 수 없는 오류"));
+                                alert("저장 실패 : " + (response.message || "알 수 없는 오류"));
                             }
                         } catch (e) {
                             console.error("JSON 파싱 오류:", e);

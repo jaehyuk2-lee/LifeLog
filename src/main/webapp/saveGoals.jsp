@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*, javax.servlet.http.*, javax.servlet.*, java.io.*" %>
+<%@ page import="java.sql.*, javax.servlet.http.*, javax.servlet.*, java.io.*, java.util.*" %>
 <%
     response.setContentType("application/json");
     request.setCharacterEncoding("UTF-8");
@@ -7,6 +7,7 @@
 
     Connection conn = null;
     PreparedStatement pstmt = null;
+    PreparedStatement checkPstmt = null;
     PrintWriter outWriter = response.getWriter();
 
     try {
@@ -37,6 +38,55 @@
         conn = DriverManager.getConnection(url, "lifelog_admin", "q1w2e3r4");
 
         conn.setAutoCommit(false);
+
+        java.util.Date today = new java.util.Date();
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = sdf.format(today);
+
+        Set<String> newLogNames = new HashSet<>();
+        for (int i = 0; i < total; i++) {
+            String logIdStr = (logIds != null && i < logIds.length) ? logIds[i] : null;
+            if (logIdStr == null || logIdStr.trim().isEmpty()) {
+                String logName = (logNames != null && i < logNames.length) ? logNames[i].trim() : "";
+                if (!logName.isEmpty()) {
+                    newLogNames.add(logName);
+                }
+            }
+        }
+
+        if (!newLogNames.isEmpty()) {
+            StringBuilder inClause = new StringBuilder();
+            inClause.append("(");
+            for (int i = 0; i < newLogNames.size(); i++) {
+                inClause.append("?");
+                if (i < newLogNames.size() - 1) {
+                    inClause.append(",");
+                }
+            }
+            inClause.append(")");
+
+            String checkSQL = "SELECT log_name FROM logs WHERE user_id = ? AND DATE(date_entered) = ? AND log_name IN " + inClause.toString();
+            checkPstmt = conn.prepareStatement(checkSQL);
+            checkPstmt.setString(1, userEmail);
+            checkPstmt.setString(2, currentDate);
+            int index = 3;
+            for (String logName : newLogNames) {
+                checkPstmt.setString(index++, logName);
+            }
+
+            ResultSet checkRs = checkPstmt.executeQuery();
+            List<String> existingLogNames = new ArrayList<>();
+            while (checkRs.next()) {
+                existingLogNames.add(checkRs.getString("log_name"));
+            }
+            checkRs.close();
+
+            if (!existingLogNames.isEmpty()) {
+                conn.rollback();
+                outWriter.write("{\"status\":\"error\", \"message\":\"이미 로그가 있습니다. 로그를 수정해주세요!\"}");
+                return;
+            }
+        }
 
         String updateSQL = "UPDATE logs SET log_name = ?, input_value = ?, unit = ?, is_goal = ?, goal_value = ? WHERE log_id = ? AND user_id = ?";
         String insertSQL = "INSERT INTO logs (user_id, log_name, input_value, unit, is_goal, goal_value, date_entered, day_of_week) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -82,7 +132,7 @@
                 }
             }
 
-            if (logIdStr != null && !logIdStr.isEmpty()) {
+            if (logIdStr != null && !logIdStr.trim().isEmpty()) {
                 int logId;
                 try {
                     logId = Integer.parseInt(logIdStr);
@@ -107,9 +157,7 @@
                     throw new Exception("해당 로그 ID를 가진 데이터를 찾을 수 없습니다. (" + (i + 1) + "번째 항목)");
                 }
             } else {
-                java.sql.Date currentDate = new java.sql.Date(new java.util.Date().getTime());
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("EEEE", java.util.Locale.KOREAN);
-                String dayOfWeek = sdf.format(currentDate);
+                String dayOfWeek = new java.text.SimpleDateFormat("EEEE", java.util.Locale.KOREAN).format(today);
 
                 insertPstmt.setString(1, userEmail);
                 insertPstmt.setString(2, logName);
@@ -121,7 +169,7 @@
                 } else {
                     insertPstmt.setNull(6, java.sql.Types.DECIMAL);
                 }
-                insertPstmt.setDate(7, currentDate);
+                insertPstmt.setString(7, currentDate);
                 insertPstmt.setString(8, dayOfWeek);
 
                 insertPstmt.executeUpdate();
@@ -142,6 +190,7 @@
         String errorMessage = e.getMessage().replace("\"", "\\\"");
         outWriter.write("{\"status\":\"error\", \"message\":\"오류: " + errorMessage + "\"}");
     } finally {
+        if (checkPstmt != null) try { checkPstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
         if (pstmt != null) try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
         if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
         outWriter.close();
