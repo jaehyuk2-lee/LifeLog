@@ -157,6 +157,15 @@ request.setAttribute("unitMap", unitMap);
             padding: 0;
             display: flex;
         }
+        
+        h1 {
+            font-family: Arial;
+            margin-bottom: 10px;
+            color: #fff;
+            border-bottom: 2px solid #2D488B;
+            padding-bottom: 10px;
+            text-align: left;
+        }
 
         .container {
             display: flex;
@@ -490,7 +499,6 @@ request.setAttribute("unitMap", unitMap);
 
         <div class="main-content">
             <h1 class="section1">주간 로그 분석</h1>
-            <hr>
             <div>
                 <label for="logSelector">로그 선택:</label>
                 <select id="logSelector">
@@ -503,11 +511,9 @@ request.setAttribute("unitMap", unitMap);
                 <canvas id="graphCanvas" width="900" height="400"></canvas>
             </div>
             <h1 class="section2">주간 달성률 분석</h1>
-            <hr>
             <div id="achievementContainer" class="graph-container">
             </div>
             <h1 class="section2">주간 로그 통계</h1>
-            <hr>
             <table class="info-table">
                 <thead>
                     <tr>

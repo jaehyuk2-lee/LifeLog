@@ -44,9 +44,9 @@
         }
 
         .container hr {
-            height: 5px;
+            height: 2px;
             border: none;
-            background-color: blue;
+            background-color: #2D488B;;
             margin-top: 0px;
         }
 

@@ -104,10 +104,10 @@
         }
 
         .content hr {
-            height: 5px;
+            height: 2px;
             width: 100%;
             border: none;
-            background-color: blue;
+            background-color: #2D488B;
             margin-top: 0px;
         }
 
