@@ -181,7 +181,7 @@
     </div>
     
     <div class="container">
-        <h1>목표관리</h1>
+        <h1>로그기록</h1>
         <table id="goalTable">
             <thead>
                 <tr>
