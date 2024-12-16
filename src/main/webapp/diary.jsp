@@ -201,7 +201,7 @@
 </head>
 <body>
   <div class="menu-bar">
-    <div class="logo-container">
+    <div class="logo-container"  onclick="location.href='main.jsp'">
       <img src="./images/Logo.png" alt="Logo" class="logo" />
       <div class="logo-text">Life Log</div>
     </div>

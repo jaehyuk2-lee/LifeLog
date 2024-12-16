@@ -198,11 +198,11 @@
 
     <div class="container">
         <div class="menu-bar">
-            <div class="logo-container">
+            <div class="logo-container"  onclick="location.href='main.jsp'">
                 <img src="./images/Logo.png" alt="Logo" class="logo" />
                 <div class="logo-text">Life Log</div>
             </div>
-            <div class="menu-item active" data-page="main" onclick="location.href='main.jsp'">메인</div>
+            <div class="menu-item" data-page="main" onclick="location.href='main.jsp'">메인</div>
             <div class="menu-item" data-page="log-analysis" onclick="location.href='log_analyze.jsp'">로그 분석</div>
             <div class="menu-item" data-page="log-record" onclick="location.href='goal_set.jsp'">로그 기록</div>
             <div class="menu-item" data-page="diary" onclick="location.href='diary.jsp'">일기</div>
